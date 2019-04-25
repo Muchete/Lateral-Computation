@@ -1,0 +1,264 @@
+body {
+  background-color: black;
+  color: white;
+
+  /* header */
+  padding-top: 66px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+}
+
+sup, sub {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
+sub {
+  top: 0.4em;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+/* h5 {
+  font-size: 3rem;
+}
+
+h6 {
+  font-size: 3rem;
+} */
+
+p, span, div, a, i, b, ul, li, ol, u {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+  color: white;
+  line-height: 1.25;
+}
+
+i {
+  font-style: italic;
+}
+
+b {
+  font-weight: bold;
+}
+
+.content{
+  position: relative;
+  padding: 10px;
+  padding-left: 30%;
+}
+
+#resultDiv {
+    border: none;
+    padding: 0;
+}
+
+mark,
+.term{
+  /* animation:blinkingText 2s infinite; */
+  animation: none;
+  color: yellow;
+}
+
+@keyframes blinkingText{
+    0%{     background-color: yellow;    }
+    50%{    background-color: transparent; }
+    100%{   background-color: yellow;    }
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+
+  width: 100%;
+  padding: 10px 0;
+  background-color: black;
+
+  border-bottom: white 2px solid;
+  max-width: 100%;
+}
+
+.proj-title{
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 2rem;
+}
+
+.search{
+  font-size: 2rem;
+  background-color: transparent;
+  color: yellow;
+  border: 0;
+  border-bottom: 1px solid white;
+  max-width: 50%;
+  height: 41px;
+  width: 110px;
+  overflow-x: scroll;
+
+  /* align-self: center; */
+
+  position: relative;
+  margin-left: 30%;
+}
+
+.search:focus{
+  /* color: yellow; */
+  outline: none;
+  border-bottom-color: yellow;
+}
+
+#title {
+  padding: 10px;
+  /* width: 30%; */
+  display: inline-block;
+  margin-left: 30%;
+  padding-left: 0;
+
+  font-size: 3rem;
+}
+
+/* wiki Entry!! */
+.toctogglecheckbox,
+.metadata,
+.hatnote,
+.mw-cite-backlink,
+.mw-empty-elt,
+.mwe-math-mathml-inline,
+.mwe-math-mathml-a11y {
+  display: none;
+}
+
+/* #resultDiv .toc,
+#resultDiv .infobox{ */
+.left-lane {
+  position: absolute;
+  left: 10px;
+  /* top: 10px; */
+  width: calc(30% - 50px);
+}
+
+.left-lane > * {
+  margin-bottom: 10px;
+}
+
+#resultDiv {
+  width: 50vw;
+  overflow: hidden;
+}
+
+#resultDiv .toctitle h2 {
+  margin-top: 0;
+}
+
+#resultDiv .reference,
+#resultDiv .reference a {
+  color: gray;
+}
+
+#resultDiv th {
+  text-align: left;
+}
+
+#resultDiv ul li {
+  list-style: disc;
+}
+
+#resultDiv ol li {
+  list-style: decimal;
+}
+
+tbody li {
+  margin-left: 20px;
+}
+
+#resultDiv .navbox {
+  margin-top: 10px;
+}
+
+#resultDiv .navbox * {
+  /* color: gray; */
+}
+
+#resultDiv .navbox-title {
+  font-size: 1.2rem;
+}
+
+#resultDiv .plainlinks.hlist.navbar.mini,
+#resultDiv .sistersitebox {
+  display: none;
+}
+
+#resultDiv .quotebox {
+  margin: 20px;
+}
+
+#resultDiv blockquote {
+  border-left: 2px solid white;
+  padding: 0 20px;
+  margin: 20px 0;
+}
+
+#resultDiv p,
+#resultDiv ul,
+#resultDiv ol {
+    margin-bottom: 10px;
+}
+
+#resultDiv .toc ul {
+  margin-bottom: 0;
+}
+
+#resultDiv sup {
+  font-size: 0.8rem;
+  /* vertical-align: top; */
+}
+
+#resultDiv img {
+  background-color: white;
+  max-width: 100%;
+  /* width: 100%; */
+}
+
+#resultDiv table tr,
+#resultDiv table td,
+#resultDiv table th,
+#resultDiv .infobox tr,
+#resultDiv .infobox td,
+#resultDiv .infobox th {
+    padding: 5px;
+    border: 1px solid gray;
+}
+
+/* #resultDiv #References,
+#resultDiv .reflist *,
+#resultDiv .reflist ~ .mw-headline, */
+/* #resultDiv .navigation *,
+#resultDiv .navbox * {
+  color: gray;
+} */
