@@ -1,8 +1,15 @@
+html {
+  height: 100vh;
+}
 body {
   background-color: black;
   color: white;
 
   /* header */
+  position: relative;
+}
+
+.topWrap {
   padding-top: 66px;
 }
 
@@ -133,13 +140,16 @@ mark,
   border-bottom-color: yellow;
 }
 
+.article-title {
+  margin-left: 30%;
+}
+
 #title {
   padding: 10px;
   /* width: 30%; */
   display: inline-block;
-  margin-left: 30%;
   padding-left: 0;
-
+  max-width: 50vw;
   font-size: 3rem;
 }
 
@@ -170,6 +180,10 @@ mark,
 #resultDiv {
   width: 50vw;
   overflow: hidden;
+}
+
+#resultDiv .first-p{
+  /* font-size: 2rem; */
 }
 
 #resultDiv .toctitle h2 {
@@ -262,3 +276,20 @@ tbody li {
 #resultDiv .navbox * {
   color: gray;
 } */
+
+/* lines test */
+#svgContainer svg{
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: visible;
+  z-index: -10;
+}
+
+#svgContainer line{
+  stroke-width: 2px;
+  stroke: yellow;
+}

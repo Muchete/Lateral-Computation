@@ -20,6 +20,10 @@ let minAccuracy = 0.7;
 
 let counter = 0;
 
+//line stuff
+let lineSVG;
+
+
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
   let regex = new RegExp("(?![{}])[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
@@ -71,6 +75,7 @@ function setup() {
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode == '13' && ready) {
       term = userInput.value();
+      $('#svgContainer').empty();
       startSearch(term);
     } else if (keycode == '13' && !ready) {
       alert('Please wait! The algorithm is working.');
@@ -183,6 +188,8 @@ function setup() {
           $(this).click(function(event) {
             if ($(this).attr('title')) {
               setDomText(header, $(this).attr('title'));
+              $('#resultDiv').empty();
+              $('#svgContainer').empty();
               let x = $(this).attr('title').replace(/\s+/g, '_');
               link.href = "https://en.wikipedia.org/wiki/" + x;
               console.log(x);
@@ -229,8 +236,67 @@ function setup() {
     $(this).find('.toc').appendTo('.left-lane');
 
     //mark first p (mostly short description)
-    $(this).find('p:first').addClass('first-p');
+    $('.mw-parser-output > p:first').addClass('first-p');
+
+    $('img').on('load', function(event) {
+      createLines();
+    });
+    createLines();
+
+    $('#userinput').add('.term').hover(function() {
+      $('svg').show();
+    }, function() {
+      $('svg').hide();
+    });
   }
+
+  window.onresize = function(event) {
+    createLines();
+  };
+
+function createLines(){
+
+  $('#svgContainer').empty();
+
+  // create the svg element
+  const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+  $('span.term').each(function(index, el) {
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    let lineID = 'line' + index;
+    let t1;
+
+    if (index >= 1) {
+      t1 = $('span.term:eq('+[index-1]+')');
+    } else {
+      t1 = $('input.search');
+    }
+
+    let t2 = $(this);
+    let x1 = t1.offset().left + (t1.width()/2);
+    let y1 = t1.offset().top + (t1.height()/2);
+    let x2 = t2.offset().left + (t2.width()/2);
+    let y2 = t2.offset().top + (t2.height()/2);
+
+    // create a circle
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("id", lineID);
+
+    // attach it to the container
+    svg1.appendChild(line);
+  });
+
+  // attach container to document
+  document.getElementById("svgContainer").appendChild(svg1);
+
+}
+
+
+
 
   // function markTerm(text, targetWord) {
   //
