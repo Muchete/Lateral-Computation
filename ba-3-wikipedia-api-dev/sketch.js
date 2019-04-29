@@ -2,9 +2,9 @@ let debug = true;
 
 let welcomeText = "HELLO!\nYou are seeing a beta experiment which might not always work. If you'd like to help me, disable your adblock, so I see what you enjoy.\n\nHOW TO USE:\nType a search term and hit ENTER.";
 
-let searchUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=';
-let contentUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=';
-let parseUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=parse&format=json&prop=text&page=';
+let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&origin=*&format=json&search=';
+let contentUrl = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=revisions&rvprop=content&format=json&titles=';
+let parseUrl = 'https://en.wikipedia.org/w/api.php?action=parse&origin=*&format=json&prop=text&page=';
 
 let userInput;
 let term;
@@ -120,7 +120,9 @@ function setup() {
 
   function goWiki500(term) {
     counter++;
-    let url = "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=500&srsearch=" + term + "&utf8=&format=json";
+    // let url = "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&srlimit=500&srsearch=" + term + "&utf8=&format=json";
+    let url = "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&srlimit=500&srsearch=" + term + "&utf8=&format=json";
+    console.log('looking for ' + url);
     loadJSON(url, gotSearch500);
   }
 
@@ -243,11 +245,11 @@ function setup() {
     });
     createLines();
 
-    $('#userinput').add('.term').hover(function() {
-      $('svg').show();
-    }, function() {
-      $('svg').hide();
-    });
+    // $('#userinput').add('.term').hover(function() {
+    //   $('svg').show();
+    // }, function() {
+    //   $('svg').hide();
+    // });
   }
 
   window.onresize = function(event) {
