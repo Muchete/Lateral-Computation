@@ -16,13 +16,14 @@ let ready = true;
 
 // 500
 let maxAccuracy = 0.8;
-let minAccuracy = 0.7;
+let minAccuracy = 0.65;
 
 let counter = 0;
 
 //line stuff
 let lineSVG;
-
+let lineList = [];
+let curLinePos = 0;
 
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
@@ -244,6 +245,7 @@ function setup() {
       createLines();
     });
     createLines();
+    // setPos();
 
     // $('#userinput').add('.term').hover(function() {
     //   $('svg').show();
@@ -254,6 +256,7 @@ function setup() {
 
   window.onresize = function(event) {
     createLines();
+    // setPos();
   };
 
 function createLines(){
@@ -262,6 +265,7 @@ function createLines(){
 
   // create the svg element
   const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  lineList = [];
 
   $('span.term').each(function(index, el) {
 
@@ -276,10 +280,11 @@ function createLines(){
     }
 
     let t2 = $(this);
-    let x1 = t1.offset().left + (t1.width()/2);
-    let y1 = t1.offset().top + (t1.height()/2);
-    let x2 = t2.offset().left + (t2.width()/2);
-    let y2 = t2.offset().top + (t2.height()/2);
+    let parent = $('#moving-frame');
+    let x1 = t1.offset().left - parent.offset().left + (t1.width()/2);
+    let y1 = t1.offset().top - parent.offset().top + (t1.height()/2);
+    let x2 = t2.offset().left - parent.offset().left + (t2.width()/2);
+    let y2 = t2.offset().top - parent.offset().top + (t2.height()/2);
 
     // create a circle
     line.setAttribute("x1", x1);
@@ -288,14 +293,53 @@ function createLines(){
     line.setAttribute("y2", y2);
     line.setAttribute("id", lineID);
 
+    // if (index == 0) {
+    //   lineList.push({'x': x1, 'y': y1});
+    // }
+    lineList.push({'x': x2,'y': y2});
+
     // attach it to the container
     svg1.appendChild(line);
   });
 
   // attach container to document
   document.getElementById("svgContainer").appendChild(svg1);
-
 }
+
+// $('#down-button').click(function(event) {
+//   if (curLinePos < lineList.length-1){
+//     curLinePos++;
+//     setPos();
+//   }
+// });
+//
+// $('#up-button').click(function(event) {
+//   if (curLinePos > 0 && lineList.length){
+//     curLinePos--;
+//     setPos();
+//   }
+// });
+//
+//
+// function setPos(){
+//   if (lineList.length) { //if lines are here
+//     let x, y;
+//
+//     x = (window.innerWidth/2) - lineList[curLinePos].x;
+//     y = (window.innerHeight/2) - lineList[curLinePos].y;
+//
+//     // $('#moving-frame').css('left', x + 'px');
+//     // $('#moving-frame').css('top', y + 'px');
+//
+//     $('#moving-frame').animate({
+//       left: x + 'px',
+//       top: y + 'px'
+//     }, 1000, function() {
+//       // Animation complete.
+//       createLines();
+//     });
+//   }
+// }
 
 
 
