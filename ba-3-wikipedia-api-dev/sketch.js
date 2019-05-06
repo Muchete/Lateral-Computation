@@ -237,6 +237,7 @@ function setup() {
     //add content to left div
     $(this).find('.infobox').appendTo('.left-lane');
     $(this).find('.toc').appendTo('.left-lane');
+    $(this).find('.thumb').appendTo('.left-lane');
 
     //mark first p (mostly short description)
     $('.mw-parser-output > p:first').addClass('first-p');
