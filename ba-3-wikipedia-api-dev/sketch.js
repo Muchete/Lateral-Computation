@@ -97,14 +97,26 @@ function setup() {
 
   $("#userinput").keypress(function(event) {
     var keycode = event.keyCode ? event.keyCode : event.which;
-    if (keycode == "13" && ready) {
-      term = userInput.value();
-      $("#svgContainer").empty();
-      startSearch(term);
-    } else if (keycode == "13" && !ready) {
-      alert("Please wait! The algorithm is working.");
+    if (keycode == "13") {
+      searchTriggered();
     }
   });
+
+  $("#search-button").click(function(event) {
+    searchTriggered();
+  });
+
+  function searchTriggered() {
+    term = userInput.value();
+    if (ready) {
+      if (term) {
+        $("#svgContainer").empty();
+        startSearch(term);
+      }
+    } else {
+      alert("Please wait! The algorithm is working.");
+    }
+  }
 
   //goWiki(userInput.value());
 
@@ -280,15 +292,9 @@ function setup() {
     //add content to left div
     $(this)
       .find(".infobox")
-      .appendTo(".left-lane");
-    $(this)
-      .find(".toc")
-      .appendTo(".left-lane");
-    $(this)
-      .find(".thumb")
-      .appendTo(".left-lane");
-    $(this)
-      .find(".vertical-navbox")
+      .add(".toc")
+      .add(".thumb")
+      .add(".vertical-navbox")
       .appendTo(".left-lane");
 
     //mark first p (mostly short description)
