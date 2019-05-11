@@ -110,7 +110,7 @@ function setup() {
     term = userInput.value();
     if (ready) {
       if (term) {
-        $("#svgContainer").empty();
+        // emptyLines();
         startSearch(term);
       }
     } else {
@@ -235,7 +235,7 @@ function setup() {
               if ($(this).attr("title")) {
                 setDomText(header, $(this).attr("title"));
                 $("#resultDiv").empty();
-                $("#svgContainer").empty();
+                // emptyLines();
                 let x = $(this)
                   .attr("title")
                   .replace(/\s+/g, "_");
@@ -318,53 +318,78 @@ function setup() {
     // setPos();
   };
 
-  function createLines() {
-    $("#svgContainer").empty();
+  function emptyLines() {
+    // $("#svgContainer").empty();
+    $("#svgContainer svg").empty();
+  }
 
-    // create the svg element
-    const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  function createLines() {
     lineList = [];
 
+    let t = $("input.search");
+    let parent = $("#moving-frame");
+    let x = t.offset().left - parent.offset().left + t.width() / 2;
+    let y = t.position().top - parent.offset().top + t.height() / 2;
+    lineList.push([x, y]);
+
     $("span.term").each(function(index, el) {
-      const line = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line"
-      );
-      let lineID = "line" + index;
-      let t1;
+      t = $(this);
+      x = t.offset().left - parent.offset().left + t.width() / 2;
+      y = t.offset().top - parent.offset().top + t.height() / 2;
 
-      if (index >= 1) {
-        t1 = $("span.term:eq(" + [index - 1] + ")");
-      } else {
-        t1 = $("input.search");
-      }
-
-      let t2 = $(this);
-      let parent = $("#moving-frame");
-      let x1 = t1.offset().left - parent.offset().left + t1.width() / 2;
-      let y1 = t1.offset().top - parent.offset().top + t1.height() / 2;
-      let x2 = t2.offset().left - parent.offset().left + t2.width() / 2;
-      let y2 = t2.offset().top - parent.offset().top + t2.height() / 2;
-
-      // create a circle
-      line.setAttribute("x1", x1);
-      line.setAttribute("y1", y1);
-      line.setAttribute("x2", x2);
-      line.setAttribute("y2", y2);
-      line.setAttribute("id", lineID);
-
-      // if (index == 0) {
-      //   lineList.push({'x': x1, 'y': y1});
-      // }
-      lineList.push({ x: x2, y: y2 });
-
-      // attach it to the container
-      svg1.appendChild(line);
+      lineList.push([x, y]);
     });
 
-    // attach container to document
-    document.getElementById("svgContainer").appendChild(svg1);
+    roundSvg.innerHTML = svgPath(lineList);
   }
+
+  // function createLines() {
+  //   // create the svg element
+  //   const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  //   lineList = [];
+  //
+  //   $("span.term").each(function(index, el) {
+  //     const line = document.createElementNS(
+  //       "http://www.w3.org/2000/svg",
+  //       "line"
+  //     );
+  //     let lineID = "line" + index;
+  //     let t1;
+  //
+  //     if (index >= 1) {
+  //       t1 = $("span.term:eq(" + [index - 1] + ")");
+  //     } else {
+  //       t1 = $("input.search");
+  //     }
+  //
+  //     let t2 = $(this);
+  //     let parent = $("#moving-frame");
+  //     let x1 = t1.offset().left - parent.offset().left + t1.width() / 2;
+  //     let y1 = t1.offset().top - parent.offset().top + t1.height() / 2;
+  //     let x2 = t2.offset().left - parent.offset().left + t2.width() / 2;
+  //     let y2 = t2.offset().top - parent.offset().top + t2.height() / 2;
+  //
+  //     // create a circle
+  //     line.setAttribute("x1", x1);
+  //     line.setAttribute("y1", y1);
+  //     line.setAttribute("x2", x2);
+  //     line.setAttribute("y2", y2);
+  //     line.setAttribute("id", lineID);
+  //
+  //     // if (index == 0) {
+  //     //   lineList.push({'x': x1, 'y': y1});
+  //     // }
+  //     lineList.push({ x: x2, y: y2 });
+  //
+  //     // attach it to the container
+  //     svg1.appendChild(line);
+  //   });
+  //
+  //   // attach container to document
+  //   // document.getElementById("svgContainer").appendChild(svg1);
+  //
+  //   roundSvg.innerHTML = svgPath(toArrayArray(lineList));
+  // }
 
   // $('#down-button').click(function(event) {
   //   if (curLinePos < lineList.length-1){

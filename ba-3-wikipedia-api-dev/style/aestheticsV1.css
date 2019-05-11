@@ -331,6 +331,7 @@ tbody li {
   /* display: none; */
 }
 
+#svgContainer path,
 #svgContainer line {
   stroke-width: 2px;
   stroke: yellow;
