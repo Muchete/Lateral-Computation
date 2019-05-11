@@ -73,5 +73,3 @@ const svgPath = points => {
   );
   return `<path d="${d}" fill="none" />`;
 };
-
-const roundSvg = document.querySelector("#round-svg");

@@ -1,21 +1,20 @@
 let debug = true;
 
-let welcomeText =
-  "HELLO!\nYou are seeing a beta experiment which might not always work. If you'd like to help me, disable your adblock, so I see what you enjoy.\n\nHOW TO USE:\nType a search term and hit ENTER.";
-
-let searchUrl =
-  "https://en.wikipedia.org/w/api.php?action=opensearch&origin=*&format=json&search=";
-let contentUrl =
-  "https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=revisions&rvprop=content&format=json&titles=";
-let parseUrl =
+const searchUrl =
+  "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&utf8=&format=json&srlimit=500&srsearch=";
+const parseUrl =
   "https://en.wikipedia.org/w/api.php?action=parse&origin=*&format=json&prop=text&page=";
+// let contentUrl =
+//   "https://en.wikipedia.org/w/api.php?action=query&origin=*&prop=revisions&rvprop=content&format=json&titles=";
 
-let userInput;
+const roundSvg = document.querySelector("#round-svg");
+const header = document.querySelector("#title");
+const link = document.querySelector("#link");
+const resultDiv = document.querySelector("#resultDiv");
+const userInput = document.querySelector("#userinput");
+
 let term;
 let title;
-let title_;
-let header;
-let resultDiv;
 let ready = true;
 
 // 500
@@ -25,9 +24,12 @@ let minAccuracy = 0.65;
 let counter = 0;
 
 //line stuff
-let lineSVG;
 let lineList = [];
 let curLinePos = 0;
+
+// ----------------------------------------------------------------------------
+// GENERAL FUNCTIONS ----------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
@@ -36,10 +38,6 @@ function findSentenceWith(text, word) {
     "gi"
   );
   return text.match(regex);
-}
-
-function setDomText(field, text) {
-  field.innerText = text;
 }
 
 function parsedTime() {
@@ -86,475 +84,293 @@ function writeStatistics(txt) {
   }
 }
 
-function setup() {
-  noCanvas();
-  userInput = select("#userinput");
+// ----------------------------------------------------------------------------
+// SEARCH FUNCTIONS -----------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-  header = document.getElementById("title");
-  link = document.getElementById("link");
-  resultDiv = document.getElementById("resultDiv");
-  // userInput.changed(startSearch);
-
-  $("#userinput").keypress(function(event) {
-    var keycode = event.keyCode ? event.keyCode : event.which;
-    if (keycode == "13") {
-      searchTriggered();
-    }
-  });
-
-  $("#search-button").click(function(event) {
+$("#userinput").keypress(function(event) {
+  var keycode = event.keyCode ? event.keyCode : event.which;
+  if (keycode == "13") {
     searchTriggered();
-  });
+  }
+});
 
-  function searchTriggered() {
-    term = userInput.value();
-    if (ready) {
-      if (term) {
-        // emptyLines();
-        startSearch(term);
-      }
-    } else {
-      alert("Please wait! The algorithm is working.");
+$("#search-button").click(searchTriggered);
+
+function searchTriggered() {
+  if (ready) {
+    term = userInput.value;
+    if (term) {
+      emptyLines();
+      prepareSearch(term);
     }
+  } else {
+    alert("Please wait! The algorithm is working.");
   }
-
-  //goWiki(userInput.value());
-
-  function startSearch(term) {
-    ready = false;
-    counter = 0;
-    setDomText(header, "Please Wait");
-    setDomText(resultDiv, "");
-    // goWiki(term);
-    goWiki500(term);
-  }
-
-  // function goWiki(term) {
-  //
-  //   if (counter < 1) {
-  //     counter = counter + 1;
-  //     //let term = userInput.value();
-  //     let url = searchUrl + term;
-  //     loadJSON(url, gotSearch);
-  //   }
-  // }
-
-  // function gotSearch(data) {
-  //   let len = data[1].length;
-  //   let index = floor(random(len));
-  //   title = data[1][index];
-  //   console.log("title:");
-  //   console.log(title);
-  //   setDomText(header, title);
-  //   // console.log(random(data[1]));
-  //   createDiv(title);
-  //   title = title.replace(/\s+/g, '_');
-  //   console.log('Querying: ' + title);
-  //   let url = contentUrl + title;
-  //   loadJSON(url, gotContent);
-  // }
-
-  function goWiki500(term) {
-    counter++;
-    // let url = "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&srlimit=500&srsearch=" + term + "&utf8=&format=json";
-    let url =
-      "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&srlimit=500&srsearch=" +
-      term +
-      "&utf8=&format=json";
-    console.log("looking for " + url);
-    loadJSON(url, gotSearch500);
-  }
-
-  function gotSearch500(data) {
-    // console.log(data);
-    // let len = data[1].length;
-    // let index = floor(random(len));
-    // let title = data[1][index];
-
-    if (data.query.search.length <= 0) {
-      console.log("no results");
-      setDomText(header, "No results. Sorry!");
-      ready = true;
-    } else {
-      let index =
-        data.query.search.length -
-        floor(random(minAccuracy, maxAccuracy) * data.query.search.length) -
-        counter;
-      // let index = floor(random(minAccuracy,maxAccuracy)*data.query.search.length) + counter;
-      title = data.query.search[index].title;
-      // title = "Cloud";
-      // // console.log(random(data[1]));
-
-      setDomText(header, title);
-      console.log(
-        "Loaded Article " + index + " of " + data.query.search.length
-      );
-      title = title.replace(/\s+/g, "_");
-      link.href = "https://en.wikipedia.org/wiki/" + title;
-
-      console.log("Querying: " + title);
-      let url = parseUrl + title;
-      // console.log("URL = "+url);
-      //  writeStatistics([parsedTime(),term,link]); -----------DEV MODE
-      loadJSON(url, gotParsed);
-    }
-  }
-
-  function gotParsed(data) {
-    let txt = data.parse.text["*"];
-    // console.log(txt);
-    // console.log('The text is loaded');
-
-    // txt = markTerm(txt, term);
-
-    $("#resultDiv")
-      .html(txt)
-      .promise()
-      .done(applyStyle);
-
-    ready = true;
-  }
-
-  function applyStyle() {
-    //fix wiki links
-    $(this)
-      .find("a")
-      .each(function(index, el) {
-        let a_link = $(this).attr("href");
-        if (a_link) {
-          // original code
-          // if (a_link.substring(0, 5) == '/wiki') {
-          //   a_link = 'https://en.wikipedia.org' + a_link;
-          //   $(this).attr('href', a_link);
-          // }
-
-          //"stay on site" code
-          if (a_link.substring(0, 5) == "/wiki") {
-            $(this).attr("href", "#");
-            $(this).click(function(event) {
-              if ($(this).attr("title")) {
-                setDomText(header, $(this).attr("title"));
-                $("#resultDiv").empty();
-                // emptyLines();
-                let x = $(this)
-                  .attr("title")
-                  .replace(/\s+/g, "_");
-                link.href = "https://en.wikipedia.org/wiki/" + x;
-                console.log(x);
-                loadJSON(parseUrl + x, gotParsed);
-              }
-            });
-          }
-        }
-      });
-
-    //remove all style html elements
-    $(this)
-      .find("style")
-      .remove();
-
-    //remove empty elements
-    $(this)
-      .find(".mw-empty-elt")
-      .remove();
-
-    //loop each element
-    $(this)
-      .find("*")
-      .each(function(index, el) {
-        if ($(this).css("display") == "none") {
-          //delete if invisible
-          $(this).remove();
-        }
-
-        //delete bg color attribute and other styles
-        $(this).removeAttr("bgcolor");
-        $(this).removeAttr("style");
-      });
-
-    //
-    $(this)
-      .find("img")
-      .removeAttr("width")
-      .removeAttr("height");
-
-    // mark terms
-    $(this)
-      .add("#title")
-      .mark(term, {
-        element: "span",
-        className: "term"
-      });
-
-    //add left lane div
-    $(this).prepend('<div class="left-lane"></div>');
-
-    //add content to left div
-    $(this)
-      .find(".infobox")
-      .add(".toc")
-      .add(".thumb")
-      .add(".vertical-navbox")
-      .appendTo(".left-lane");
-
-    //mark first p (mostly short description)
-    $(".mw-parser-output > p:first").addClass("first-p");
-
-    $("img").on("load", function(event) {
-      createLines();
-    });
-    createLines();
-    // setPos();
-
-    // $('#userinput').add('.term').hover(function() {
-    //   $('svg').show();
-    // }, function() {
-    //   $('svg').hide();
-    // });
-  }
-
-  window.onresize = function(event) {
-    createLines();
-    // setPos();
-  };
-
-  function emptyLines() {
-    // $("#svgContainer").empty();
-    $("#svgContainer svg").empty();
-  }
-
-  function createLines() {
-    lineList = [];
-
-    let t = $("input.search");
-    let parent = $("#moving-frame");
-    let x = t.offset().left - parent.offset().left + t.width() / 2;
-    let y = t.position().top - parent.offset().top + t.height() / 2;
-    lineList.push([x, y]);
-
-    $("span.term").each(function(index, el) {
-      t = $(this);
-      x = t.offset().left - parent.offset().left + t.width() / 2;
-      y = t.offset().top - parent.offset().top + t.height() / 2;
-
-      lineList.push([x, y]);
-    });
-
-    roundSvg.innerHTML = svgPath(lineList);
-  }
-
-  // function createLines() {
-  //   // create the svg element
-  //   const svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  //   lineList = [];
-  //
-  //   $("span.term").each(function(index, el) {
-  //     const line = document.createElementNS(
-  //       "http://www.w3.org/2000/svg",
-  //       "line"
-  //     );
-  //     let lineID = "line" + index;
-  //     let t1;
-  //
-  //     if (index >= 1) {
-  //       t1 = $("span.term:eq(" + [index - 1] + ")");
-  //     } else {
-  //       t1 = $("input.search");
-  //     }
-  //
-  //     let t2 = $(this);
-  //     let parent = $("#moving-frame");
-  //     let x1 = t1.offset().left - parent.offset().left + t1.width() / 2;
-  //     let y1 = t1.offset().top - parent.offset().top + t1.height() / 2;
-  //     let x2 = t2.offset().left - parent.offset().left + t2.width() / 2;
-  //     let y2 = t2.offset().top - parent.offset().top + t2.height() / 2;
-  //
-  //     // create a circle
-  //     line.setAttribute("x1", x1);
-  //     line.setAttribute("y1", y1);
-  //     line.setAttribute("x2", x2);
-  //     line.setAttribute("y2", y2);
-  //     line.setAttribute("id", lineID);
-  //
-  //     // if (index == 0) {
-  //     //   lineList.push({'x': x1, 'y': y1});
-  //     // }
-  //     lineList.push({ x: x2, y: y2 });
-  //
-  //     // attach it to the container
-  //     svg1.appendChild(line);
-  //   });
-  //
-  //   // attach container to document
-  //   // document.getElementById("svgContainer").appendChild(svg1);
-  //
-  //   roundSvg.innerHTML = svgPath(toArrayArray(lineList));
-  // }
-
-  // $('#down-button').click(function(event) {
-  //   if (curLinePos < lineList.length-1){
-  //     curLinePos++;
-  //     setPos();
-  //   }
-  // });
-  //
-  // $('#up-button').click(function(event) {
-  //   if (curLinePos > 0 && lineList.length){
-  //     curLinePos--;
-  //     setPos();
-  //   }
-  // });
-  //
-  //
-  // function setPos(){
-  //   if (lineList.length) { //if lines are here
-  //     let x, y;
-  //
-  //     x = (window.innerWidth/2) - lineList[curLinePos].x;
-  //     y = (window.innerHeight/2) - lineList[curLinePos].y;
-  //
-  //     // $('#moving-frame').css('left', x + 'px');
-  //     // $('#moving-frame').css('top', y + 'px');
-  //
-  //     $('#moving-frame').animate({
-  //       left: x + 'px',
-  //       top: y + 'px'
-  //     }, 1000, function() {
-  //       // Animation complete.
-  //       createLines();
-  //     });
-  //   }
-  // }
-
-  // function markTerm(text, targetWord) {
-  //
-  //   var wordList = targetWord.split(" ");
-  //   // console.log(wordList);
-  //
-  //   for (var i = 0; i < wordList.length; i++) {
-  //     let regex = new RegExp(wordList[i], "gi");
-  //     let highlighted = '<span class="term">' + wordList[i] + '</span>';
-  //     text = text.replace(regex, highlighted);
-  //   }
-  //
-  //   return text;
-  // }
-
-  // function markTermInDOM(targetWord) {
-  //
-  //   var wordList = targetWord.split(" ");
-  //   // console.log(wordList);
-  //
-  //   $('*', $('#resultDiv')).each(function() {
-  //     let text = $(this).text();
-  //
-  //     for (var i = 0; i < wordList.length; i++) {
-  //       let regex = new RegExp(wordList[i], "gi");
-  //       let highlighted = '<span class="term">' + wordList[i] + '</span>';
-  //
-  //       text = text.replace(regex, highlighted);
-  //     }
-  //
-  //     $(this).html(text);
-  //   });
-  // }
-
-  // function gotContent(data) {
-  //   let page = data.query.pages;
-  //   let pageId = Object.keys(data.query.pages)[0];
-  //   // console.log(pageId);
-  //   let content = page[pageId].revisions[0]['*'];
-  //
-  //   // find sentences
-  //   displaySentences(content, term);
-  //
-  //   // rankWords
-  //   // let wordRegex = /\b\w{4,}\b/g;
-  //   // let words = content.match(wordRegex);
-  //   // rankWords(words);
-  //
-  //   // repeat?
-  //   // let word = random(words);
-  //   // goWiki(word);
-  //   // console.log(word);
-  // }
-
-  // function displaySentences(content, term) {
-  //   console.log("looking for " + term);
-  //   let result = findSentenceWith(content, term);
-  //   let msg = "";
-  //   if (result) {
-  //     console.log(result);
-  //     for (var i = 0; i < result.length; i++) {
-  //       msg += result[i];
-  //       msg += "\n\n";
-  //     }
-  //     counter = 0;
-  //     setDomText(resultDiv, msg);
-  //   } else {
-  //     console.log("No " + term + " found in any sentence...");
-  //     console.log("\nDoing it again:");
-  //     goWiki500(term);
-  //   }
-  // }
-
-  //   function rankWords(words) {
-  //     let wordlist = {};
-  //
-  //     for (var i = 0; i < words.length; i++) {
-  //       if (wordlist[words[i]] >= 1) {
-  //         wordlist[words[i]]++;
-  //       } else {
-  //         wordlist[words[i]] = 1;
-  //       }
-  //     }
-  //
-  //     let wordRanking = Object.keys(wordlist).sort(function(a, b) {
-  //       return wordlist[b] - wordlist[a]
-  //     });
-  //     console.log("Word number one is: " + wordRanking[0]);
-  //   }
 }
 
-// alert(welcomeText);
+function prepareSearch(term) {
+  ready = false;
+  counter = 0;
+  header.innerText = "Please Wait";
+  resultDiv.innerText = "";
+  search(term);
+}
 
-// RESIZING OF SEARCH BOX
-$.fn.textWidth = function(text, font) {
-  if (!$.fn.textWidth.fakeEl)
-    $.fn.textWidth.fakeEl = $("<span>")
-      .hide()
-      .appendTo(document.body);
+function search(term) {
+  counter++;
+  let url = searchUrl + term;
+  console.log("looking for " + url);
 
-  $.fn.textWidth.fakeEl
-    .text(
-      text ||
-        this.val().replace(/[ \t]+$/g, ".") ||
-        this.text() ||
-        this.attr("placeholder")
-    )
-    .css("font", font || this.css("font"));
+  $.getJSON(url, receivedSearch);
+}
 
-  return $.fn.textWidth.fakeEl.width();
+function receivedSearch(data) {
+  if (data.query.search.length <= 0) {
+    console.log("no results");
+    header.innerText = "No results. Sorry!";
+    link.href = "#";
+    ready = true;
+  } else {
+    let index =
+      data.query.search.length -
+      Math.floor(
+        Math.random(minAccuracy, maxAccuracy) * data.query.search.length
+      ) -
+      counter;
+
+    title = data.query.search[index].title;
+
+    header.innerText = title;
+    console.log("Loaded Article " + index + " of " + data.query.search.length);
+    title = title.replace(/\s+/g, "_");
+    link.href = "https://en.wikipedia.org/wiki/" + title;
+
+    console.log("Querying: " + title);
+    let url = parseUrl + title;
+
+    $.getJSON(url, gotParsed);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// RECEIVED DATA FUNCTIONS ----------------------------------------------------
+// ----------------------------------------------------------------------------
+
+function gotParsed(data) {
+  let txt = data.parse.text["*"];
+  // console.log(txt);
+
+  $("#resultDiv")
+    .html(txt)
+    .promise()
+    .done(applyStyle);
+
+  ready = true;
+}
+
+function applyStyle() {
+  //fix wiki links
+  $(this)
+    .find("a")
+    .each(function(index, el) {
+      let a_link = $(this).attr("href");
+      if (a_link) {
+        //"stay on site" code
+        if (a_link.substring(0, 5) == "/wiki") {
+          $(this).attr("href", "#");
+          $(this).click(function(event) {
+            if ($(this).attr("title")) {
+              header.innerText = $(this).attr("title");
+              $("#resultDiv").empty();
+              emptyLines();
+              let x = $(this)
+                .attr("title")
+                .replace(/\s+/g, "_");
+              link.href = "https://en.wikipedia.org/wiki/" + x;
+              let url = parseUrl + x;
+
+              $.getJSON(url, gotParsed);
+            }
+          });
+        }
+      }
+    });
+
+  //remove all style html elements
+  $(this)
+    .find("style")
+    .add(".mw-empty-elt")
+    .remove();
+
+  //loop each element
+  $(this)
+    .find("*")
+    .each(function(index, el) {
+      if ($(this).css("display") == "none") {
+        //delete if invisible
+        $(this).remove();
+      }
+
+      //delete bg color attribute and other styles
+      $(this).removeAttr("bgcolor");
+      $(this).removeAttr("style");
+    });
+
+  //
+  $(this)
+    .find("img")
+    .removeAttr("width")
+    .removeAttr("height");
+
+  // mark terms in resultDiv (this) and title
+  $(this)
+    .add("#title")
+    .mark(term, {
+      element: "span",
+      className: "term"
+    });
+
+  //add left lane div
+  $(this).prepend('<div class="left-lane"></div>');
+
+  //add content to left div
+  $(this)
+    .find(".infobox")
+    .add(".toc")
+    .add(".thumb")
+    .add(".vertical-navbox")
+    .appendTo(".left-lane");
+
+  //mark first p (mostly short description)
+  $(".mw-parser-output > p:first").addClass("first-p");
+
+  $("img").on("load", createLines);
+  createLines();
+}
+
+// ----------------------------------------------------------------------------
+// LINE FUNCTIONS -------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+window.onresize = function(event) {
+  createLines();
 };
 
-$(".width-dynamic")
-  .on("input", function() {
-    var inputWidth = $(this).textWidth();
-    $(this).css({
-      width: inputWidth
-    });
-  })
-  .trigger("input");
-
-function inputWidth(elem, minW, maxW) {
-  elem = $(this);
-  // console.log(elem)
+function emptyLines() {
+  $("#svgContainer svg").empty();
 }
 
-var targetElem = $(".width-dynamic");
+function createLines() {
+  lineList = [];
 
-inputWidth(targetElem);
-// ------------------
+  let t = $("input.search");
+  let parent = $("#moving-frame");
+  let x = t.offset().left - parent.offset().left + t.width() / 2;
+  let y = t.position().top - parent.offset().top + t.height() / 2;
+  lineList.push([x, y]);
+
+  $("span.term").each(function(index, el) {
+    t = $(this);
+    x = t.offset().left - parent.offset().left + t.width() / 2;
+    y = t.offset().top - parent.offset().top + t.height() / 2;
+
+    lineList.push([x, y]);
+  });
+
+  roundSvg.innerHTML = svgPath(lineList);
+}
+
+// $('#down-button').click(function(event) {
+//   if (curLinePos < lineList.length-1){
+//     curLinePos++;
+//     setPos();
+//   }
+// });
+//
+// $('#up-button').click(function(event) {
+//   if (curLinePos > 0 && lineList.length){
+//     curLinePos--;
+//     setPos();
+//   }
+// });
+//
+//
+// function setPos(){
+//   if (lineList.length) { //if lines are here
+//     let x, y;
+//
+//     x = (window.innerWidth/2) - lineList[curLinePos].x;
+//     y = (window.innerHeight/2) - lineList[curLinePos].y;
+//
+//     // $('#moving-frame').css('left', x + 'px');
+//     // $('#moving-frame').css('top', y + 'px');
+//
+//     $('#moving-frame').animate({
+//       left: x + 'px',
+//       top: y + 'px'
+//     }, 1000, function() {
+//       // Animation complete.
+//       createLines();
+//     });
+//   }
+// }
+
+// function gotContent(data) {
+//   let page = data.query.pages;
+//   let pageId = Object.keys(data.query.pages)[0];
+//   // console.log(pageId);
+//   let content = page[pageId].revisions[0]['*'];
+//
+//   // find sentences
+//   displaySentences(content, term);
+//
+//   // rankWords
+//   // let wordRegex = /\b\w{4,}\b/g;
+//   // let words = content.match(wordRegex);
+//   // rankWords(words);
+//
+//   // repeat?
+//   // let word = random(words);
+//   // goWiki(word);
+//   // console.log(word);
+// }
+
+// function displaySentences(content, term) {
+//   console.log("looking for " + term);
+//   let result = findSentenceWith(content, term);
+//   let msg = "";
+//   if (result) {
+//     console.log(result);
+//     for (var i = 0; i < result.length; i++) {
+//       msg += result[i];
+//       msg += "\n\n";
+//     }
+//     counter = 0;
+//     resultDiv.innerText = msg;
+//   } else {
+//     console.log("No " + term + " found in any sentence...");
+//     console.log("\nDoing it again:");
+//     search(term);
+//   }
+// }
+
+//   function rankWords(words) {
+//     let wordlist = {};
+//
+//     for (var i = 0; i < words.length; i++) {
+//       if (wordlist[words[i]] >= 1) {
+//         wordlist[words[i]]++;
+//       } else {
+//         wordlist[words[i]] = 1;
+//       }
+//     }
+//
+//     let wordRanking = Object.keys(wordlist).sort(function(a, b) {
+//       return wordlist[b] - wordlist[a]
+//     });
+//     console.log("Word number one is: " + wordRanking[0]);
+//   }
 
 // let titleAnimation;
 // let p = 0;
