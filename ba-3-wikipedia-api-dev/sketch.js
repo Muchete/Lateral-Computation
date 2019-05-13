@@ -16,12 +16,8 @@ const userInput = document.querySelector("#userinput");
 let term;
 let title;
 let ready = true;
-
-// 500
 let maxAccuracy = 0.8;
 let minAccuracy = 0.65;
-
-let counter = 0;
 
 //line stuff
 let lineList = [];
@@ -53,6 +49,10 @@ function parsedTime() {
     ":" +
     ("0" + d.getMinutes()).slice(-2)
   );
+}
+
+function random(min, max) {
+  return Math.random() * (+max - +min) + +min;
 }
 
 function writeStatistics(txt) {
@@ -111,14 +111,12 @@ function searchTriggered() {
 
 function prepareSearch(term) {
   ready = false;
-  counter = 0;
   header.innerText = "Please Wait";
   resultDiv.innerText = "";
   search(term);
 }
 
 function search(term) {
-  counter++;
   let url = searchUrl + term;
   console.log("looking for " + url);
 
@@ -126,20 +124,15 @@ function search(term) {
 }
 
 function receivedSearch(data) {
-  if (data.query.search.length <= 0) {
-    console.log("no results");
-    header.innerText = "No results. Sorry!";
-    link.href = "#";
-    ready = true;
-  } else {
+  if (data.query.search.length) {
     let index =
       data.query.search.length -
-      Math.floor(
-        Math.random(minAccuracy, maxAccuracy) * data.query.search.length
-      ) -
-      counter;
+      Math.floor(random(minAccuracy, maxAccuracy) * data.query.search.length);
 
     title = data.query.search[index].title;
+
+    // set fixed title for a specific article.
+    // title = "gongylus gongylodes";
 
     header.innerText = title;
     console.log("Loaded Article " + index + " of " + data.query.search.length);
@@ -150,6 +143,11 @@ function receivedSearch(data) {
     let url = parseUrl + title;
 
     $.getJSON(url, gotParsed);
+  } else {
+    console.log("no results");
+    header.innerText = "No results. Sorry!";
+    link.href = "#";
+    ready = true;
   }
 }
 
@@ -165,8 +163,6 @@ function gotParsed(data) {
     .html(txt)
     .promise()
     .done(applyStyle);
-
-  ready = true;
 }
 
 function applyStyle() {
@@ -238,7 +234,7 @@ function applyStyle() {
   $(this)
     .find(".infobox")
     .add(".toc")
-    .add(".thumb")
+    // .add(".thumb") // images in left lane?
     .add(".vertical-navbox")
     .appendTo(".left-lane");
 
@@ -247,6 +243,8 @@ function applyStyle() {
 
   $("img").on("load", createLines);
   createLines();
+
+  ready = true;
 }
 
 // ----------------------------------------------------------------------------
