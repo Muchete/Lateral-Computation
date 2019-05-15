@@ -132,7 +132,9 @@ function receivedSearch(data) {
     title = data.query.search[index].title;
 
     // set fixed title for a specific article.
-    // title = "gongylus gongylodes";
+    // title = "Jōetsu Line";
+    // title = "Pulau Biola";
+    // title = "Titanic";
 
     header.innerText = title;
     console.log("Loaded Article " + index + " of " + data.query.search.length);
@@ -234,6 +236,7 @@ function applyStyle() {
   $(this)
     .find(".infobox")
     .add(".toc")
+    .add(".tright")
     // .add(".thumb") // images in left lane?
     .add(".vertical-navbox")
     .appendTo(".left-lane");
