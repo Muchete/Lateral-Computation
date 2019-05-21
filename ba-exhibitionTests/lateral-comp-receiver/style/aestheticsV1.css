@@ -85,12 +85,16 @@ b {
 .content {
   position: relative;
   padding: 10px;
-  padding-left: 30%;
+  padding-left: calc(30% - 50px);
 }
 
 #resultDiv {
   border: none;
   padding: 0;
+  padding-left: 50px;
+
+  width: 50vw;
+  overflow: hidden;
 }
 
 mark,
@@ -143,6 +147,11 @@ mark,
   color: yellow;
   border: 0;
   border-bottom: 2px solid gray;
+
+  /* EXHIBITION */
+  border: none;
+  click-events: none;
+
   max-width: 50%;
   height: 41px;
   width: 110px;
@@ -170,6 +179,7 @@ mark,
 }
 
 .btn-search {
+  visibility: hidden;
   font-size: 2rem;
   color: white;
   background: transparent;
@@ -183,6 +193,10 @@ mark,
 
 .article-title {
   margin-left: 30%;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
 }
 
 #title {
@@ -216,11 +230,6 @@ mark,
 
 .left-lane > * {
   margin-bottom: 10px;
-}
-
-#resultDiv {
-  width: 50vw;
-  overflow: hidden;
 }
 
 #resultDiv .first-p {

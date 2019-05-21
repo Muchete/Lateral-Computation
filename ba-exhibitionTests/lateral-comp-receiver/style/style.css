@@ -1,0 +1,39 @@
+#resultDiv{
+  border: 5px solid yellow;
+  padding: 5px;
+}
+
+mark,
+.term{
+  animation:blinkingText 2s infinite;
+}
+
+.wrapper {
+  max-width: 500px;
+}
+
+@keyframes blinkingText{
+    0%{     background-color: yellow;    }
+    50%{    background-color: transparent; }
+    100%{   background-color: yellow;    }
+}
+
+
+/* JOELS CODE */
+
+a {
+  /* text-decoration: none; */
+  /* color: white; */
+}
+
+a:hover {
+  /* text-decoration: none; */
+}
+
+/* * {
+  color: #000 !important;
+} */
+
+.mw-editsection {
+  display: none;
+}

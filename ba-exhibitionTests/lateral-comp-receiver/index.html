@@ -32,14 +32,9 @@
       })(window, document, "https://static.hotjar.com/c/hotjar-", ".js?sv=");
     </script>
 
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.min.js"
-      charset="utf-8"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"
-      charset="utf-8"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+    <script src="https://assets.shiftr.io/js/mqtt-2.9.0.js"></script>
   </head>
 
   <body>
@@ -50,7 +45,7 @@
         name="input"
         class="search width-dynamic"
         id="userinput"
-        placeholder="Search"
+        readonly
       />
       <button class="btn-search" type="button" id="search-button" name="Search">
         →
