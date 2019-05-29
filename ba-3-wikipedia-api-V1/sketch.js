@@ -5,11 +5,15 @@
 // Wikipedia
 // Edited Video: https://youtu.be/RPz75gcHj18
 
-let welcomeText = "HELLO!\nYou are seeing a beta experiment which might not always work. If you'd like to help me, disable your adblock, so I see what you enjoy.\n\nHOW TO USE:\nType a search term and hit ENTER.";
+let welcomeText =
+  "HELLO!\nYou are seeing a beta experiment which might not always work. If you'd like to help me, disable your adblock, so I see what you enjoy.\n\nHOW TO USE:\nType a search term and hit ENTER.";
 
-let searchUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=';
-let contentUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=';
-let parseUrl = 'https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=parse&format=json&prop=text&page=';
+let searchUrl =
+  "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=";
+let contentUrl =
+  "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=";
+let parseUrl =
+  "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=parse&format=json&prop=text&page=";
 
 let userInput;
 let term;
@@ -26,7 +30,10 @@ let counter = 0;
 
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
-  let regex = new RegExp("(?![{}])[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
+  let regex = new RegExp(
+    "(?![{}])[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]",
+    "gi"
+  );
   return text.match(regex);
 }
 
@@ -34,12 +41,22 @@ function setDomText(field, text) {
   field.innerText = text;
 }
 
-function parsedTime(){
+function parsedTime() {
   let d = new Date();
-  return d.getDate() + "." + (d.getMonth()+1) + "." + d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  return (
+    d.getDate() +
+    "." +
+    (d.getMonth() + 1) +
+    "." +
+    d.getFullYear() +
+    " " +
+    ("0" + d.getHours()).slice(-2) +
+    ":" +
+    ("0" + d.getMinutes()).slice(-2)
+  );
 }
 
-function writeStatistics(txt){
+function writeStatistics(txt) {
   let string = "";
 
   for (var i = 0; i < txt.length; i++) {
@@ -48,28 +65,34 @@ function writeStatistics(txt){
   }
 
   // remove ; and add \n
-  string = string.substring(string.length-1,0);
+  string = string.substring(string.length - 1, 0);
   string += "\n";
 
   var data = new FormData();
-  data.append("data" , txt);
-  var xhr = (window.XMLHttpRequest) ? new XMLHttpRequest() : new activeXObject("Microsoft.XMLHTTP");
-  xhr.open( 'post', 'http://michaelschoenenberger.ch/wiki-api-v1/receiver.php', true );
+  data.append("data", txt);
+  var xhr = window.XMLHttpRequest
+    ? new XMLHttpRequest()
+    : new activeXObject("Microsoft.XMLHTTP");
+  xhr.open(
+    "post",
+    "http://michaelschoenenberger.ch/wiki-api-v1/receiver.php",
+    true
+  );
   xhr.send(data);
 }
 
 function setup() {
   noCanvas();
-  userInput = select('#userinput');
+  userInput = select("#userinput");
 
-  header = document.getElementById('title');
-  link = document.getElementById('link');
-  resultDiv = document.getElementById('resultDiv');
+  header = document.getElementById("title");
+  link = document.getElementById("link");
+  resultDiv = document.getElementById("resultDiv");
   // userInput.changed(startSearch);
 
-  $('#userinput').keypress(function(event) {
-    var keycode = (event.keyCode ? event.keyCode : event.which);
-    if (keycode == '13' && ready) {
+  $("#userinput").keypress(function(event) {
+    var keycode = event.keyCode ? event.keyCode : event.which;
+    if (keycode == "13" && ready) {
       term = userInput.value();
       startSearch(term);
     }
@@ -113,61 +136,69 @@ function setup() {
 
   function goWiki500(term) {
     counter++;
-    let url = "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=500&srsearch=" + term + "&utf8=&format=json";
+    let url =
+      "https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=500&srsearch=" +
+      term +
+      "&utf8=&format=json";
     loadJSON(url, gotSearch500);
   }
 
   function gotSearch500(data) {
-
     // console.log(data);
     // let len = data[1].length;
     // let index = floor(random(len));
     // let title = data[1][index];
 
-    let index = data.query.search.length - floor(random(minAccuracy, maxAccuracy) * data.query.search.length) - counter;
+    let index =
+      data.query.search.length -
+      floor(random(minAccuracy, maxAccuracy) * data.query.search.length) -
+      counter;
     // let index = floor(random(minAccuracy,maxAccuracy)*data.query.search.length) + counter;
     title = data.query.search[index].title;
-    // title = "Cloud";
+    title = "Cloud";
     // // console.log(random(data[1]));
 
     setDomText(header, title);
-    console.log('Loaded Article ' + index + ' of ' + data.query.search.length);
-    title = title.replace(/\s+/g, '_');
+    console.log("Loaded Article " + index + " of " + data.query.search.length);
+    title = title.replace(/\s+/g, "_");
     link.href = "https://en.wikipedia.org/wiki/" + title;
 
-    console.log('Querying: ' + title);
+    console.log("Querying: " + title);
     let url = parseUrl + title;
     // console.log("URL = "+url);
     //  writeStatistics([parsedTime(),term,link]); -----------DEV MODE
     loadJSON(url, gotParsed);
   }
 
-
-
   function gotParsed(data) {
-    let txt = data.parse.text['*'];
+    let txt = data.parse.text["*"];
     // console.log(txt);
 
     // txt = markTerm(txt, term);
 
-    $('#resultDiv').html(txt).promise().done(function() {
-      //fix wiki links
-      $(this).find('a').each(function(index, el) {
-        let link = $(this).attr('href');
-        if (link) {
-          if (link.substring(0, 5) == '/wiki') {
-            link = 'https://en.wikipedia.org' + link;
-            $(this).attr('href', link);
-          }
-        }
-      });
+    $("#resultDiv")
+      .html(txt)
+      .promise()
+      .done(function() {
+        //fix wiki links
+        $(this)
+          .find("a")
+          .each(function(index, el) {
+            let link = $(this).attr("href");
+            if (link) {
+              if (link.substring(0, 5) == "/wiki") {
+                link = "https://en.wikipedia.org" + link;
+                $(this).attr("href", link);
+              }
+            }
+          });
 
-      // mark terms
-      $(this).mark(term, {
-        'element': 'span',
-        'className': 'term'
+        // mark terms
+        $(this).mark(term, {
+          element: "span",
+          className: "term"
+        });
       });
-    });
 
     ready = true;
   }
