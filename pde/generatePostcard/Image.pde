@@ -44,4 +44,12 @@ class Image {
       return b;
     }
   }
+
+  float returnSmaller(float a, float b){
+    if (a <= b) {
+      return a;
+    } else {
+      return b;
+    }
+  }
 }
