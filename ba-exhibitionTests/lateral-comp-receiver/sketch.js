@@ -352,7 +352,7 @@ client.on("message", function(topic, message) {
 
 let scrollLoop;
 let down = true;
-function pageScroll(speed, offset) {
+function pageScroll() {
   if (down) {
     window.scrollBy(0, 1);
     if (
@@ -368,11 +368,12 @@ function pageScroll(speed, offset) {
     }
   }
 
-  scrollLoop = setTimeout(pageScroll, speed);
+  // scrollLoop = setTimeout(pageScroll, speed);
 }
 
 function toggleDirection() {
   down = !down;
 }
 
-pageScroll(50, 500);
+// pageScroll(10000, 500);
+scrollLoop = setInterval(pageScroll, 50);

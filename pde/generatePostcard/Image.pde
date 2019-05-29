@@ -27,14 +27,14 @@ class Image {
     float wfactor = 1;
     float hfactor = 1;
 
-    hfactor = float(height) / float(img.height);
-    wfactor = float(width) / float(img.width);
+    hfactor = float(width) / float(img.height);
+    wfactor = float(height) / float(img.width);
     f = returnBigger(wfactor, hfactor);
 
     w = int(f * img.width);
     h = int(f * img.height);
-    x = int((width - (f * img.width))/2);
-    y = int((height - (f * img.height))/2);
+    x = int((height - (f * img.width))/2);
+    y = int((width - (f * img.height))/2);
   }
 
   float returnBigger(float a, float b){
