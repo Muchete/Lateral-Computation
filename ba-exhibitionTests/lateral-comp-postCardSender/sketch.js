@@ -31,6 +31,10 @@ let curLinePos = 0;
 // GENERAL FUNCTIONS ----------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+$.fn.random = function() {
+  return this.eq(Math.floor(Math.random() * this.length));
+};
+
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
   let regex = new RegExp(
@@ -289,31 +293,36 @@ function sendCardInfo() {
   }
 
   let imgEl;
+  let imgURL;
+
   $("#resultDiv")
     .find("img")
     .each(function(index, el) {
-      if (!index) {
-        imgEl = $(this);
+      let tempURL = $(this).attr("src");
+
+      //remove thumbnail from url
+      if (tempURL.includes("/thumb")) {
+        tempURL = tempURL.replace(/\/thumb/g, "");
+        tempURL = tempURL.substring(0, tempURL.lastIndexOf("/"));
       }
 
-      if (
-        $(this).width() > imgEl.width() &&
-        !$(this)
-          .attr("src")
-          .endsWith("svg")
-      ) {
-        //get widest image
-        imgEl = $(this);
+      //if not svg
+      if (!tempURL.endsWith("svg")) {
+        if (imgEl) {
+          if ($(this).width() > imgEl.width()) {
+            //get widest image
+            imgEl = $(this);
+          }
+        } else {
+          imgEl = $(this);
+          imgURL = tempURL;
+        }
       }
     });
 
   let h = term.charAt(0).toUpperCase() + term.slice(1);
 
   if (imgEl) {
-    let imgURL = imgEl.attr("src");
-    console.log(imgURL);
-    imgURL = imgURL.replace(/\/thumb/g, "");
-    imgURL = imgURL.substring(0, imgURL.lastIndexOf("/"));
     console.log(imgURL);
 
     // if not SVG
