@@ -73,7 +73,6 @@ function setSearchField() {
   $(".width-dynamic").css({
     width: inputWidth
   });
-  console.log(this);
 }
 
 $(document).ready(function() {
