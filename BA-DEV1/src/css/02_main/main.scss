@@ -1,0 +1,397 @@
+.mw-editsection {
+  display: none;
+}
+
+html {
+  height: 100vh;
+}
+body {
+  background-color: black;
+  color: white;
+
+  /* header */
+  position: relative;
+}
+
+.topWrap {
+  padding-top: 66px;
+  /* padding-top: 50vh; */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+
+sup,
+sub {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
+sub {
+  top: 0.4em;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+/* h5 {
+  font-size: 3rem;
+}
+
+h6 {
+  font-size: 3rem;
+} */
+
+p,
+span,
+div,
+a,
+i,
+b,
+ul,
+li,
+ol,
+u {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  color: white;
+  line-height: 1.25;
+}
+
+i {
+  font-style: italic;
+}
+
+b {
+  font-weight: bold;
+}
+
+.content {
+  position: relative;
+  padding: 10px;
+  padding-left: 30%;
+}
+
+#resultDiv {
+  border: none;
+  padding: 0;
+}
+
+mark,
+.term {
+  /* animation:blinkingText 2s infinite; */
+  animation: none;
+  color: yellow;
+}
+
+@keyframes blinkingText {
+  0% {
+    background-color: yellow;
+  }
+  50% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: yellow;
+  }
+}
+
+.lc-header {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 8px;
+  background-color: black;
+
+  border-bottom: white 2px solid;
+  max-width: 100%;
+}
+
+.proj-title {
+  position: absolute;
+  left: 8px;
+  top: 11px;
+  font-size: 2rem;
+}
+
+.search {
+  font-size: 2rem;
+  background-color: transparent;
+  color: yellow;
+  border: 0;
+  border-bottom: 2px solid gray;
+  max-width: 200px;
+  height: 41px;
+  width: 96.0469px;
+  overflow-x: scroll;
+
+  /* align-self: center; */
+
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 2px;
+
+  position: relative;
+  margin-left: 500px;
+}
+
+.search::placeholder {
+  color: gray;
+  opacity: 1; /* Firefox */
+}
+
+.search:focus {
+  /* color: yellow; */
+  outline: none;
+  border-bottom-color: yellow;
+}
+
+.btn-search {
+  font-size: 2rem;
+  color: white;
+  background: transparent;
+  border: none;
+  padding-left: 2px;
+}
+
+.btn-search:hover {
+  color: yellow;
+}
+
+.article-title {
+  margin-left: 30%;
+}
+
+#title {
+  padding: 10px;
+  /* width: 30%; */
+  display: inline-block;
+  padding-left: 0;
+  max-width: 50vw;
+  font-size: 3rem;
+}
+
+/* wiki Entry!! */
+.toctogglecheckbox,
+.metadata,
+.hatnote,
+.mw-cite-backlink,
+.mw-empty-elt,
+.mwe-math-mathml-inline,
+.mwe-math-mathml-a11y {
+  display: none;
+}
+
+/* #resultDiv .toc,
+#resultDiv .infobox{ */
+.left-lane {
+  position: absolute;
+  left: 10px;
+  /* top: 10px; */
+  width: calc(30% - 50px);
+}
+
+.left-lane > * {
+  margin-bottom: 10px;
+}
+
+#resultDiv {
+  max-width: 850px;
+  width: 100%;
+  overflow: hidden;
+}
+
+#resultDiv .first-p {
+  /* font-size: 2rem; */
+}
+
+#resultDiv .toctitle h2 {
+  margin-top: 0;
+}
+
+#resultDiv .reference,
+#resultDiv .reference a {
+  color: gray;
+}
+
+#resultDiv th {
+  text-align: left;
+}
+
+#resultDiv ul li {
+  list-style: disc;
+}
+
+#resultDiv ol li {
+  list-style: decimal;
+}
+
+tbody li {
+  margin-left: 20px;
+}
+
+#resultDiv .navbox {
+  margin-top: 10px;
+}
+
+#resultDiv .navbox * {
+  /* color: gray; */
+}
+
+#resultDiv .navbox-title {
+  font-size: 1.2rem;
+}
+
+#resultDiv .plainlinks.hlist.navbar.mini,
+#resultDiv .sistersitebox {
+  display: none;
+}
+
+#resultDiv .quotebox {
+  margin: 20px;
+}
+
+#resultDiv blockquote {
+  border-left: 2px solid white;
+  padding: 0 20px;
+  margin: 20px 0;
+}
+
+#resultDiv p,
+#resultDiv ul,
+#resultDiv ol {
+  margin-bottom: 10px;
+}
+
+#resultDiv .toc ul {
+  margin-bottom: 0;
+}
+
+#resultDiv sup {
+  font-size: 0.8rem;
+  /* vertical-align: top; */
+}
+
+#resultDiv img {
+  background-color: white;
+  max-width: 100%;
+  /* width: 100%; */
+}
+
+#resultDiv table tr,
+#resultDiv table td,
+#resultDiv table th,
+#resultDiv .infobox tr,
+#resultDiv .infobox td,
+#resultDiv .infobox th {
+  padding: 5px;
+  border: 1px solid gray;
+}
+
+/* #resultDiv #References,
+#resultDiv .reflist *,
+#resultDiv .reflist ~ .mw-headline, */
+/* #resultDiv .navigation *,
+#resultDiv .navbox * {
+  color: gray;
+} */
+
+/* lines test */
+#svgContainer svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: visible;
+  z-index: -10;
+  /* display: none; */
+}
+
+#svgContainer path,
+#svgContainer line {
+  stroke-width: 2px;
+  stroke: yellow;
+}
+
+/* MOBILE VIEW!! */
+
+@media only screen and (max-width: 1024px) {
+  .article-title {
+    margin-left: 0;
+  }
+
+  #title {
+    padding: 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .content {
+    padding: 10px;
+  }
+
+  #resultDiv {
+    width: 100%;
+  }
+
+  .left-lane {
+    position: inherit;
+    width: 100%;
+  }
+
+  table {
+     width: 100%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .proj-title,
+  .search,
+  .btn-search {
+    font-size: 1.5rem;
+  }
+
+  .search {
+    margin-left: 0;
+    margin-right: 30px;
+    float: right;
+    height: 30px;
+    max-width: none;
+    max-width: calc(50% - 30px);
+  }
+
+  .btn-search {
+    position: absolute;
+    right: 0;
+    top: 10px;
+  }
+}
