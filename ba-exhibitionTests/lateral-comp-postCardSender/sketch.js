@@ -27,9 +27,15 @@ let minAccuracy = 0.65;
 let lineList = [];
 let curLinePos = 0;
 
+window.history.pushState({ home: true }, "");
+
 // ----------------------------------------------------------------------------
 // GENERAL FUNCTIONS ----------------------------------------------------------
 // ----------------------------------------------------------------------------
+
+$.fn.random = function() {
+  return this.eq(Math.floor(Math.random() * this.length));
+};
 
 function findSentenceWith(text, word) {
   // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
@@ -72,7 +78,7 @@ function writeStatistics(txt) {
   string += "\n";
 
   if (debug || exhibition) {
-    console.log(string);
+    // console.log(string);
   } else {
     var data = new FormData();
     data.append("data", txt);
@@ -105,7 +111,6 @@ function searchTriggered() {
   if (ready) {
     term = userInput.value;
     if (term) {
-      emptyLines();
       prepareSearch(term);
     }
   } else {
@@ -116,13 +121,38 @@ function searchTriggered() {
 function prepareSearch(term) {
   ready = false;
   header.innerText = "Please Wait";
-  resultDiv.innerText = "";
+  hideContent(true);
+  emptyLines();
   search(term);
+}
+
+function resetSearch() {
+  setSearchField();
+  emptyLines();
+  hideContent();
+}
+
+function hideContent(del) {
+  $("#resultDiv").fadeOut("fast", function() {
+    if (del) {
+      $(this).empty();
+    }
+  });
+}
+
+function showContent() {
+  $("#resultDiv").fadeIn({
+    duration: "slow",
+    // queue: false,
+    start: function() {
+      createLines();
+    }
+  });
 }
 
 function search(term) {
   let url = searchUrl + term;
-  console.log("looking for " + url);
+  // console.log("looking for " + url);
 
   $.getJSON(url, receivedSearch);
 }
@@ -144,28 +174,61 @@ function receivedSearch(data) {
     // title = "Titanic";
 
     header.innerText = title;
-    console.log("Loaded Article " + 0 + " of " + data.query.search.length);
-    console.log(
-      "Sent Article " +
-        index +
-        " of " +
-        data.query.search.length +
-        "to the receiver"
-    );
+    // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
+    // console.log(
+    //   "Sent Article " +
+    //     index +
+    //     " of " +
+    //     data.query.search.length +
+    //     "to the receiver"
+    // );
     title = title.replace(/\s+/g, "_");
     link.href = "https://en.wikipedia.org/wiki/" + title;
 
-    console.log("Querying: " + title);
-    let url = parseUrl + title;
+    // console.log("Querying: " + title);
 
+    setHistory();
+    let url = parseUrl + title;
     $.getJSON(url, gotParsed);
   } else {
-    console.log("no results");
+    // console.log("no results");
     header.innerText = "No results. Sorry!";
     link.href = "#";
     ready = true;
     client.publish("/senderQueryFailure", "1");
   }
+}
+
+// ----------------------------------------------------------------------------
+// History functions ----- ----------------------------------------------------
+// ----------------------------------------------------------------------------
+
+window.onpopstate = function(event) {
+  hideContent();
+  emptyLines();
+
+  if (event.state.home) {
+    userInput.value = "";
+    header.innerText = "";
+    resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
+  } else {
+    userInput.value = event.state.term;
+    header.innerText = event.state.cardTitle;
+    let url = parseUrl + event.state.title;
+    $.getJSON(url, gotParsed);
+  }
+
+  setSearchField();
+};
+
+function setHistory() {
+  let l = {
+    title: title,
+    cardTitle: cardTitle,
+    term: term,
+    home: false
+  };
+  window.history.pushState(l, "");
 }
 
 // ----------------------------------------------------------------------------
@@ -195,7 +258,7 @@ function applyStyle() {
           $(this).click(function(event) {
             if ($(this).attr("title")) {
               header.innerText = $(this).attr("title");
-              $("#resultDiv").empty();
+              hideContent();
               emptyLines();
               let x = $(this)
                 .attr("title")
@@ -259,8 +322,11 @@ function applyStyle() {
   //mark first p (mostly short description)
   $(".mw-parser-output > p:first").addClass("first-p");
 
-  $("img").on("load", createLines);
   createLines();
+  $("img").on("load", createLines);
+  $("#resultDiv")
+    .find("*")
+    .on("load", createLines);
 
   //send card info, once images are Loaded
   let imagesLoaded = 0;
@@ -273,6 +339,7 @@ function applyStyle() {
   });
 
   ready = true;
+  showContent();
 }
 
 // ----------------------------------------------------------------------------
@@ -289,33 +356,36 @@ function sendCardInfo() {
   }
 
   let imgEl;
+  let imgURL;
+
   $("#resultDiv")
     .find("img")
     .each(function(index, el) {
-      if (!index) {
-        imgEl = $(this);
+      let tempURL = $(this).attr("src");
+
+      //remove thumbnail from url
+      if (tempURL.includes("/thumb")) {
+        tempURL = tempURL.replace(/\/thumb/g, "");
+        tempURL = tempURL.substring(0, tempURL.lastIndexOf("/"));
       }
 
-      if (
-        $(this).width() > imgEl.width() &&
-        !$(this)
-          .attr("src")
-          .endsWith("svg")
-      ) {
-        //get widest image
-        imgEl = $(this);
+      //if not svg
+      if (!tempURL.endsWith("svg") && !tempURL.endsWith("webm")) {
+        if (imgEl) {
+          if ($(this).width() > imgEl.width()) {
+            //get widest image
+            imgEl = $(this);
+          }
+        } else {
+          imgEl = $(this);
+          imgURL = tempURL;
+        }
       }
     });
 
   let h = term.charAt(0).toUpperCase() + term.slice(1);
 
   if (imgEl) {
-    let imgURL = imgEl.attr("src");
-    console.log(imgURL);
-    imgURL = imgURL.replace(/\/thumb/g, "");
-    imgURL = imgURL.substring(0, imgURL.lastIndexOf("/"));
-    console.log(imgURL);
-
     // if not SVG
     //correctTitle would also work
     //cardTitle would also work
@@ -333,7 +403,11 @@ window.onresize = function(event) {
 };
 
 function emptyLines() {
-  $("#svgContainer svg").empty();
+  $("#svgContainer").fadeOut("fast", function() {
+    $(this)
+      .find("svg")
+      .empty();
+  });
 }
 
 function createLines() {
@@ -354,6 +428,7 @@ function createLines() {
   });
 
   roundSvg.innerHTML = svgPath(lineList);
+  $("#svgContainer").fadeIn("slow");
 }
 
 // ----------------------------------------------------------------------------
