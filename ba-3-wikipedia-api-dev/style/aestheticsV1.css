@@ -336,3 +336,15 @@ tbody li {
   stroke-width: 2px;
   stroke: yellow;
 }
+
+/* MOBILE VIEW!! */
+
+@media only screen and (max-width: 768px) {
+  .article-title {
+    margin-left: 0;
+  }
+
+  .left-lane {
+    position: inherit;
+  }
+}

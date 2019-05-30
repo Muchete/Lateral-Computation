@@ -340,4 +340,5 @@ tbody li {
 #svgContainer line {
   stroke-width: 2px;
   stroke: yellow;
+  transition: all 0.5s;
 }

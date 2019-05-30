@@ -18,13 +18,15 @@ $.fn.textWidth = function(text, font) {
 };
 
 $(".width-dynamic")
-  .on("input", function() {
-    var inputWidth = $(this).textWidth();
-    $(this).css({
-      width: inputWidth
-    });
-  })
+  .on("input", setSearchField)
   .trigger("input");
+
+function setSearchField() {
+  var inputWidth = $(".width-dynamic").textWidth();
+  $(".width-dynamic").css({
+    width: inputWidth
+  });
+}
 
 function inputWidth(elem, minW, maxW) {
   elem = $(this);
