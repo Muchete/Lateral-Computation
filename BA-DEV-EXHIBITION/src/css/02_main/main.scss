@@ -215,7 +215,7 @@ mark,
   position: absolute;
   left: 10px;
   /* top: 10px; */
-  width: calc(30% - 50px);
+  width: calc(500px - 50px);
 }
 
 .left-lane > * {
@@ -371,6 +371,17 @@ tbody li {
   table {
      width: 100%;
   }
+}
+
+.warn {
+  animation-name: warning;
+  animation-duration: 0.5s;
+}
+
+@keyframes warning {
+  0% {color: white;}
+  5% {color: red;}
+  100% {color: white;}
 }
 
 @media only screen and (max-width: 768px) {

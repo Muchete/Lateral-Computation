@@ -176,7 +176,10 @@ function searchTriggered() {
       prepareSearch(term);
     }
   } else {
-    alert("Please wait! The algorithm is working.");
+    $('#title').addClass('warn');
+    setTimeout(function(){
+      $('#title').removeClass('warn');
+    }, 500);
   }
 }
 
