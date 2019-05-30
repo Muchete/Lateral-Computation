@@ -447,7 +447,7 @@ client.on("connect", function() {
   console.log("SHIFTR: client has connected!");
 });
 
-client.publish("/example", "r");
+// client.publish("/example", "r");
 
 // client.on("message", function(topic, message) {
 //   console.log("SHIFTR: new message:", topic, message.toString());

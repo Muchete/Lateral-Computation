@@ -394,8 +394,70 @@ function applyStyle() {
     .find("*")
     .on("load", createLines);
 
+  //send card info, once images are Loaded
+  let imagesLoaded = 0;
+  let totalImages = $(this).find("img").length;
+  $("img").on("load", function(event) {
+    imagesLoaded++;
+    if (imagesLoaded == totalImages) {
+      sendCardInfo();
+    }
+  });
+
   ready = true;
   showContent();
+}
+
+// ----------------------------------------------------------------------------
+// SEND CARD INFOS ------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+function sendCardInfo() {
+  plot = $(".first-p")
+    .remove(".reference")
+    .text(); //??? REMOVE REFERENCES IN HERE
+
+  if (plot.endsWith("\n")) {
+    plot = plot.substring(0, plot.lastIndexOf("\n"));
+  }
+
+  let imgEl;
+  let imgURL;
+
+  $("#resultDiv")
+    .find("img")
+    .each(function(index, el) {
+      let tempURL = $(this).attr("src");
+
+      //remove thumbnail from url
+      if (tempURL.includes("/thumb")) {
+        tempURL = tempURL.replace(/\/thumb/g, "");
+        tempURL = tempURL.substring(0, tempURL.lastIndexOf("/"));
+      }
+
+      //if not svg
+      if (!tempURL.endsWith("svg") && !tempURL.endsWith("webm")) {
+        if (imgEl) {
+          if ($(this).width() > imgEl.width()) {
+            //get widest image
+            imgEl = $(this);
+          }
+        } else {
+          imgEl = $(this);
+          imgURL = tempURL;
+        }
+      }
+    });
+
+  let h = term.charAt(0).toUpperCase() + term.slice(1);
+
+  if (imgEl) {
+    // if not SVG
+    //correctTitle would also work
+    //cardTitle would also work
+    //term would also work
+    client.publish("/cardInfo", "https:" + imgURL + "|" + h + "|" + plot);
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -435,3 +497,19 @@ function createLines() {
   roundSvg.innerHTML = svgPath(lineList);
   $("#svgContainer").fadeIn("slow");
 }
+
+// ----------------------------------------------------------------------------
+// SHIFTR FUNCTIONS -----------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+//setting up shiftr
+var client = mqtt.connect(
+  "wss://lc-sender:1c99172350e3efc0@broker.shiftr.io",
+  {
+    clientId: "lc-card-sender"
+  }
+);
+
+client.on("connect", function() {
+  console.log("SHIFTR: client has connected!");
+});
