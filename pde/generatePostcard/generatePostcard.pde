@@ -3,12 +3,15 @@ MQTTClient client;
 Card card;
 
 PFont sporting, inter;
+PGraphics blurBG;
+
 
 void setup() {
   // size(1240, 874);
   size(874, 1292);
   // size(2480, 1748);
   // size(1748, 2480);
+  blurBG = createGraphics(width, height);
 
   client = new MQTTClient(this);
   client.connect("mqtt://lc-receiver:eb7aab538c41e201@broker.shiftr.io", "processing-receiver");
@@ -19,10 +22,11 @@ void setup() {
   inter = createFont("Inter-Medium", 18);
 
   card = new Card();
+
+  noStroke();
 }
 
 void draw () {
-  background(255,255,0);
 
   translate(width, 0);
   rotate(PI/2);
@@ -38,7 +42,7 @@ void messageReceived(String topic, byte[] payload) {
 }
 
 void keyPressed(){
-  String fname = card.h + hour() + minute();
+  String fname =  str(day()) + str(hour()) + str(minute()) + card.h;
   switch (key) {
     case 'p':
       save("prints/"+fname+".jpg");
