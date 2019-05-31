@@ -185,7 +185,8 @@ function searchTriggered() {
 
 function prepareSearch(term) {
   ready = false;
-  header.innerText = "Please Wait";
+  // header.innerText = "Please Wait";
+  hideHeader();
   hideContent(true);
   emptyLines();
   search(term);
@@ -215,6 +216,27 @@ function showContent() {
   });
 }
 
+function setHeader(txt){
+  header.innerText = txt;
+  $('#title').fadeIn({
+    duration: "slow",
+    // queue: false
+  });
+}
+
+function changeHeader(txt){
+  $('#title').fadeOut("slow",function(){
+    setHeader(txt);
+  });
+}
+
+function hideHeader(){
+  $('#title').fadeOut({
+    duration: "slow",
+    // queue: false
+  });
+}
+
 function search(term) {
   let url = searchUrl + term;
   // console.log("looking for " + url);
@@ -237,7 +259,9 @@ function receivedSearch(data) {
     // title = "Pulau Biola";
     // title = "Titanic";
 
-    header.innerText = title;
+    // header.innerText = title;
+    setHeader(title);
+
     // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
     // console.log(
     //   "Sent Article " +
@@ -255,8 +279,9 @@ function receivedSearch(data) {
     let url = parseUrl + title;
     $.getJSON(url, gotParsed);
   } else {
-    // console.log("no results");
-    header.innerText = "No results. Sorry!";
+
+    // header.innerText = "No results. Sorry!";
+    setHeader("No results. Sorry!");
     link.href = "#";
     ready = true;
   }
@@ -271,12 +296,13 @@ window.onpopstate = function(event) {
   emptyLines();
 
   if (event.state.home) {
-    userInput.value = "";
-    header.innerText = "";
-    resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
+    // userInput.value = "";
+    // header.innerText = "";
+    // resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
   } else {
     userInput.value = event.state.term;
-    header.innerText = event.state.cardTitle;
+    // header.innerText = event.state.cardTitle;
+    changeHeader(event.state.cardTitle);
     let url = parseUrl + event.state.title;
     $.getJSON(url, gotParsed);
   }
@@ -320,7 +346,8 @@ function applyStyle() {
           $(this).attr("href", "#");
           $(this).click(function(event) {
             if ($(this).attr("title")) {
-              header.innerText = $(this).attr("title");
+              // header.innerText = $(this).attr("title");
+              changeHeader($(this).attr("title"));
               hideContent();
               emptyLines();
               let x = $(this)
