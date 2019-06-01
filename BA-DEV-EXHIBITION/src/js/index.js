@@ -198,6 +198,28 @@ function resetSearch() {
   hideContent();
 }
 
+function hideBoth(del){
+  // $("#resultDiv").fadeOut("fast", function() {
+  //   if (del) {
+  //     $(this).empty();
+  //   }
+  // });
+
+  $("#resultDiv").fadeOut({
+    duration: "fast",
+    // queue: false,
+    start: function() {
+      createLines();
+      $('#title').fadeOut("fast");
+    },
+    complete: function() {
+      if (del) {
+        $(this).empty();
+      }
+    }
+  });
+}
+
 function hideContent(del) {
   $("#resultDiv").fadeOut("fast", function() {
     if (del) {
@@ -208,7 +230,7 @@ function hideContent(del) {
 
 function showContent() {
   $("#resultDiv").fadeIn({
-    duration: "slow",
+    duration: "fast",
     // queue: false,
     start: function() {
       createLines();
@@ -216,25 +238,19 @@ function showContent() {
   });
 }
 
-function setHeader(txt){
+function setHeader(txt, f){
   header.innerText = txt;
-  $('#title').fadeIn({
-    duration: "slow",
-    // queue: false
+  $('#title').fadeIn("fast", f);
+}
+
+function changeHeader(txt, f){
+  $('#title').fadeOut("fast",function(){
+    setHeader(txt, f);
   });
 }
 
-function changeHeader(txt){
-  $('#title').fadeOut("slow",function(){
-    setHeader(txt);
-  });
-}
-
-function hideHeader(){
-  $('#title').fadeOut({
-    duration: "slow",
-    // queue: false
-  });
+function hideHeader(f){
+  $('#title').fadeOut("fast", f);
 }
 
 function search(term) {
@@ -260,24 +276,27 @@ function receivedSearch(data) {
     // title = "Titanic";
 
     // header.innerText = title;
-    setHeader(title);
+    // setHeader(title);
 
-    // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
-    // console.log(
-    //   "Sent Article " +
-    //     index +
-    //     " of " +
-    //     data.query.search.length +
-    //     "to the receiver"
-    // );
-    title = title.replace(/\s+/g, "_");
-    link.href = "https://en.wikipedia.org/wiki/" + title;
+    setHeader(title, function(){
 
-    // console.log("Querying: " + title);
+      // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
+      // console.log(
+      //   "Sent Article " +
+      //     index +
+      //     " of " +
+      //     data.query.search.length +
+      //     "to the receiver"
+      // );
+      title = title.replace(/\s+/g, "_");
+      link.href = "https://en.wikipedia.org/wiki/" + title;
 
-    setHistory();
-    let url = parseUrl + title;
-    $.getJSON(url, gotParsed);
+      // console.log("Querying: " + title);
+
+      setHistory();
+      let url = parseUrl + title;
+      $.getJSON(url, gotParsed);
+    });
   } else {
 
     // header.innerText = "No results. Sorry!";
@@ -302,9 +321,10 @@ window.onpopstate = function(event) {
   } else {
     userInput.value = event.state.term;
     // header.innerText = event.state.cardTitle;
-    changeHeader(event.state.cardTitle);
-    let url = parseUrl + event.state.title;
-    $.getJSON(url, gotParsed);
+    changeHeader(event.state.cardTitle, function(){
+      let url = parseUrl + event.state.title;
+      $.getJSON(url, gotParsed);
+    });
   }
 
   setSearchField();
@@ -346,17 +366,28 @@ function applyStyle() {
           $(this).attr("href", "#");
           $(this).click(function(event) {
             if ($(this).attr("title")) {
-              // header.innerText = $(this).attr("title");
-              changeHeader($(this).attr("title"));
-              hideContent();
-              emptyLines();
-              let x = $(this)
-                .attr("title")
-                .replace(/\s+/g, "_");
-              link.href = "https://en.wikipedia.org/wiki/" + x;
-              let url = parseUrl + x;
 
-              $.getJSON(url, gotParsed);
+              let t = $(this).attr("title");
+              $("#title").fadeOut({
+                duration: "fast",
+                start: function(){
+                  hideContent();
+                  emptyLines();
+                },
+                complete: function(){
+                  header.innerText = t;
+                  $("#title").fadeIn({
+                    complete: function(){
+                      let x = t.replace(/\s+/g, "_");
+                      link.href = "https://en.wikipedia.org/wiki/" + x;
+                      let url = parseUrl + x;
+
+                      $.getJSON(url, gotParsed);
+                    }
+                  });
+                }
+              });
+
             }
           });
         }
@@ -432,7 +463,6 @@ function applyStyle() {
       sendCardInfo();
     }
   });
-
   ready = true;
   showContent();
 }
@@ -524,7 +554,7 @@ function createLines() {
   });
 
   roundSvg.innerHTML = svgPath(lineList);
-  $("#svgContainer").fadeIn("slow");
+  $("#svgContainer").fadeIn("fast");
 }
 
 // ----------------------------------------------------------------------------
