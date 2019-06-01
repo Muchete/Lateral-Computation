@@ -457,14 +457,19 @@ function applyStyle() {
   //send card info, once images are Loaded
   let imagesLoaded = 0;
   let totalImages = $(this).find("img").length;
-  $("img").on("load", function(event) {
-    imagesLoaded++;
-    if (imagesLoaded == totalImages) {
-      sendCardInfo();
-    }
-  });
-  ready = true;
-  showContent();
+  if (totalImages) {
+    $("img").on("load", function(event) {
+      imagesLoaded++;
+      if (imagesLoaded == totalImages) {
+        sendCardInfo();
+        ready = true;
+        showContent();
+      }
+    });
+  } else {
+    ready = true;
+    showContent();
+  }
 }
 
 // ----------------------------------------------------------------------------
