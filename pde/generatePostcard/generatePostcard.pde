@@ -27,6 +27,7 @@ void setup() {
 }
 
 void draw () {
+  background(255);
 
   translate(width, 0);
   rotate(PI/2);
