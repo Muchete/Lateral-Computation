@@ -37,10 +37,10 @@ class Card {
 
     textLeading(2);
     textFont(inter);
+    textSize(18);
+    textLeading(22);
     textAlign(LEFT, BOTTOM);
 
-
-    fill(255,0,0);
     text(p, leftMargin, width/2 - topMargin, height*.6, width/2);
 
 

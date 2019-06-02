@@ -19,7 +19,7 @@ void setup() {
 
   sporting = createFont("SportingGrotesque-Bold", 44);
   // inter = createFont("InterUI-Medium", 18);
-  inter = createFont("Inter-Medium", 18);
+  inter = createFont("Inter-Bold", 18);
 
   card = new Card();
 
