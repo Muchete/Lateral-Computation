@@ -176,9 +176,13 @@ function searchTriggered() {
       prepareSearch(term);
     }
   } else {
-    $('#title').addClass('warn');
-    setTimeout(function(){
-      $('#title').removeClass('warn');
+    $("#title")
+      .add("#title .term")
+      .addClass("warn");
+    setTimeout(function() {
+      $("#title")
+        .add("#title .term")
+        .removeClass("warn");
     }, 500);
   }
 }
@@ -198,19 +202,13 @@ function resetSearch() {
   hideContent();
 }
 
-function hideBoth(del){
-  // $("#resultDiv").fadeOut("fast", function() {
-  //   if (del) {
-  //     $(this).empty();
-  //   }
-  // });
-
+function hideBoth(del) {
   $("#resultDiv").fadeOut({
     duration: "fast",
     // queue: false,
     start: function() {
-      createLines();
-      $('#title').fadeOut("fast");
+      emptyLines();
+      $("#title").fadeOut("fast");
     },
     complete: function() {
       if (del) {
@@ -238,19 +236,19 @@ function showContent() {
   });
 }
 
-function setHeader(txt, f){
+function setHeader(txt, f) {
   header.innerText = txt;
-  $('#title').fadeIn("fast", f);
+  $("#title").fadeIn("fast", f);
 }
 
-function changeHeader(txt, f){
-  $('#title').fadeOut("fast",function(){
+function changeHeader(txt, f) {
+  $("#title").fadeOut("fast", function() {
     setHeader(txt, f);
   });
 }
 
-function hideHeader(f){
-  $('#title').fadeOut("fast", f);
+function hideHeader(f) {
+  $("#title").fadeOut("fast", f);
 }
 
 function search(term) {
@@ -278,8 +276,7 @@ function receivedSearch(data) {
     // header.innerText = title;
     // setHeader(title);
 
-    setHeader(title, function(){
-
+    setHeader(title, function() {
       // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
       // console.log(
       //   "Sent Article " +
@@ -298,7 +295,6 @@ function receivedSearch(data) {
       $.getJSON(url, gotParsed);
     });
   } else {
-
     // header.innerText = "No results. Sorry!";
     setHeader("No results. Sorry!");
     link.href = "#";
@@ -311,23 +307,27 @@ function receivedSearch(data) {
 // ----------------------------------------------------------------------------
 
 window.onpopstate = function(event) {
-  hideContent();
-  emptyLines();
+  console.log(event);
+  if (event.state) {
+    hideContent();
+    emptyLines();
 
-  if (event.state.home) {
-    // userInput.value = "";
-    // header.innerText = "";
-    // resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
-  } else {
-    userInput.value = event.state.term;
-    // header.innerText = event.state.cardTitle;
-    changeHeader(event.state.cardTitle, function(){
-      let url = parseUrl + event.state.title;
-      $.getJSON(url, gotParsed);
-    });
+    if (event.state.home) {
+      // userInput.value = "";
+      // header.innerText = "";
+      // resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
+      hideHeader();
+    } else {
+      userInput.value = event.state.term;
+      // header.innerText = event.state.cardTitle;
+      changeHeader(event.state.cardTitle, function() {
+        let url = parseUrl + event.state.title;
+        $.getJSON(url, gotParsed);
+      });
+    }
+
+    setSearchField();
   }
-
-  setSearchField();
 };
 
 function setHistory() {
@@ -366,18 +366,17 @@ function applyStyle() {
           $(this).attr("href", "#");
           $(this).click(function(event) {
             if ($(this).attr("title")) {
-
               let t = $(this).attr("title");
               $("#title").fadeOut({
                 duration: "fast",
-                start: function(){
+                start: function() {
                   hideContent();
                   emptyLines();
                 },
-                complete: function(){
+                complete: function() {
                   header.innerText = t;
                   $("#title").fadeIn({
-                    complete: function(){
+                    complete: function() {
                       let x = t.replace(/\s+/g, "_");
                       link.href = "https://en.wikipedia.org/wiki/" + x;
                       let url = parseUrl + x;
@@ -387,7 +386,6 @@ function applyStyle() {
                   });
                 }
               });
-
             }
           });
         }
@@ -477,14 +475,6 @@ function applyStyle() {
 // ----------------------------------------------------------------------------
 
 function sendCardInfo() {
-  plot = $(".first-p")
-    .remove(".reference")
-    .text(); //??? REMOVE REFERENCES IN HERE
-
-  if (plot.endsWith("\n")) {
-    plot = plot.substring(0, plot.lastIndexOf("\n"));
-  }
-
   let imgEl;
   let imgURL;
 
@@ -499,12 +489,13 @@ function sendCardInfo() {
         tempURL = tempURL.substring(0, tempURL.lastIndexOf("/"));
       }
 
-      //if not svg
-      if (!tempURL.endsWith("svg") && !tempURL.endsWith("webm")) {
+      // if it is an image
+      if (tempURL.match(/.(jpg|jpeg|png|gif)$/i)) {
         if (imgEl) {
           if ($(this).width() > imgEl.width()) {
             //get widest image
             imgEl = $(this);
+            imgURL = tempURL;
           }
         } else {
           imgEl = $(this);
@@ -513,9 +504,17 @@ function sendCardInfo() {
       }
     });
 
-  let h = term.charAt(0).toUpperCase() + term.slice(1);
-
   if (imgEl) {
+    plot = $(".first-p")
+      .remove(".reference")
+      .text(); //??? REMOVE REFERENCES IN HERE
+
+    if (plot.endsWith("\n")) {
+      plot = plot.substring(0, plot.lastIndexOf("\n"));
+    }
+
+    let h = term.charAt(0).toUpperCase() + term.slice(1);
+
     // if not SVG
     //correctTitle would also work
     //cardTitle would also work
