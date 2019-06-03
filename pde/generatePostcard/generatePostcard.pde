@@ -11,6 +11,8 @@ void setup() {
   size(874, 1292);
   // size(2480, 1748);
   // size(1748, 2480);
+  smooth();
+  frameRate(4);
   blurBG = createGraphics(width, height);
 
   client = new MQTTClient(this);

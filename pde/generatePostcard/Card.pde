@@ -4,14 +4,22 @@ class Card {
   boolean ready = false;
   int topMargin = 20;
   int leftMargin = 15;
-  String h = "Lateral Computation";
-  String p = "Plot.";
-  int pLeading = 23;
+
   int pSize = 18;
-  int backgroundOffset;
-  int lineCount;
-  float lastLine;
-  float pBoxWidth;
+  int pLeading = 24;
+
+  int hSize = 44;
+  int hLeading = 51;
+
+  float pBoxW;
+
+  int marginL = 4;
+  //padding in relation to font size
+  float paddingB = .5;
+
+
+  String h = "Lateral Computation";
+  String p = "The presence of computer networks and the associated algorithms rises daily. Filter systems on the internet offer less and less room for unexpected, yet refreshing, encounters. Lateral Computation explores the potential of enforcing serendipity in knowledge retrieval systems by making use of alternative algorithms.";
   String defaultURL = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/09/12/11/naturo-monkey-selfie.jpg";
 
 
@@ -20,36 +28,26 @@ class Card {
     // blur = loadShader("blur.glsl");
     topMargin = int(width / topMargin);
     leftMargin = int(height / leftMargin);
-    pBoxWidth = height*.6;
+    pBoxW = height*.6;
 
     //set default Value
     set(defaultURL,h,p);
     ready = false;
+
+    // p = "Shanghai (Chinese: 上海, Mandarin pronunciation: [ʂâŋ.xài] (About this soundlisten); Shanghainese pronunciation: [zɑ̃.hɛ] (About this soundlisten)) is one of the four municipalities under the direct administration of the central government of the People's Republic of China, the largest city in China by population, and the largest city proper in the world, with a population of 26.3 million as of 2019.[13][14] It is a global financial center[15] and transport hub, with the world's busiest container port.[16] Located in the Yangtze River Delta, it sits on the south edge of the estuary of the Yangtze in the middle portion of the Eastern China coast. The municipality borders the provinces of Jiangsu and Zhejiang to the south, east and west, and is bound to the east by the East China Sea.[17]";
   }
 
   void display(){
     bg.display();
-    image(blurBG,0,0);
+    // image(blurBG,0,0);
 
-
-    fill(255,255,0);
-    textFont(sporting);
-    textAlign(LEFT, TOP);
-    text(h, leftMargin, topMargin, height, width/2);
+    headerBLK(h, leftMargin, topMargin, height, width/2);
 
     // TEST RED RECTANGLE -----------
     // fill(255,0,0);
     // rect(leftMargin, topMargin, height, width/2);
 
-
-
-    // fill(255,255,0);
-    // textFont(inter);
-    // textSize(pSize);
-    // textLeading(pLeading);
-    // textAlign(LEFT, BOTTOM);
-    pBLK(p, leftMargin, width/2 - topMargin, height*.6, width/2);
-
+    textBLK(p, leftMargin, width/2 - topMargin, pBoxW, width/2);
 
     // TEST RED RECTANGLE -----------
     // fill(255,0,0);
@@ -61,41 +59,60 @@ class Card {
     bg.set(imgUrl);
     h = header;
     p = plot;
-
-
-    lineCount = int(1 + floor(textWidth(p) / pBoxWidth));
-    println("lines: " + lineCount);
-    lastLine = textWidth(p) % pBoxWidth;
-    println("last line: " + lastLine);
-
-
-    // drawBlurBG();
     ready = true;
+    // drawBlurBG();
   }
 
-  void pBLK(String text, float x, float y, float w, float h){
-    float yOffset = 3;
+  void headerBLK(String text, float x, float y, float w, float h){
+    textFont(sporting);
+    textSize(hSize);
+    textLeading(hLeading);
+    textAlign(LEFT, TOP);
+    float offsetY = textDescent()*paddingB;
 
-    fill(0);
-    for (int l = 1; l < lineCount; l++) {
-      rect(x, y + h - pLeading - (pLeading * l) + yOffset, pBoxWidth, pSize);
+    String[] paras = toParagraph(text, w);
+
+    for (int i = 0; i < paras.length ; i++) {
+      float newY = y + (hLeading * abs(i-paras.length+1));
+      fill(0);
+      rect(x - marginL, newY, textWidth(paras[i]), hLeading + offsetY + 1);
     }
-    rect(x, y + h - pLeading + yOffset, pBoxWidth, pSize);
+    for (int i = 0; i < paras.length ; i++) {
+      float newY = y + (hLeading * abs(i-paras.length+1));
+      fill(255,255,0);
+      text(paras[i], x, newY);
+    }
+  }
 
-    fill(255,255,0);
+  void textBLK(String text, float x, float y, float w, float h){
     textFont(inter);
     textSize(pSize);
     textLeading(pLeading);
     textAlign(LEFT, BOTTOM);
-    text(text, x, y, w, h);
+    float offsetY = textDescent()*paddingB;
+
+    String[] paras = toParagraph(text, w);
+
+    for (int i = 0; i < paras.length ; i++) {
+      float newY = y + h - (pLeading * abs(i-paras.length+1));
+      fill(0);
+      rect(x - marginL, newY - pLeading + offsetY, textWidth(paras[i]), pLeading + 1);
+    }
+    for (int i = 0; i < paras.length ; i++) {
+      float newY = y + h - (pLeading * abs(i-paras.length+1));
+      fill(255,255,0);
+      text(paras[i], x, newY);
+    }
+
   }
 
-  void textBorder(String text, float x, float y, float w, float h){
-    fill(0);
-    for (int o = -1; o < 2; o++) {
-      text(text, x+o, y, w, h);
-      text(text, x, y+o, w, h);
-    }
+
+  void textShadow(String text, float x, float y, float w, float h){
+    // fill(0);
+    // for (int o = -1; o < 2; o++) {
+    //   text(text, x+o, y, w, h);
+    //   text(text, x, y+o, w, h);
+    // }
     fill(255,255,0);
     text(text, x, y, w, h);
   }
@@ -126,5 +143,29 @@ class Card {
     //   blurBG.text(text, x, y+o, w, h);
     // }
     blurBG.text(text, x, y, w, h);
+  }
+
+  String[] toParagraph(String t, float boxW){
+    String[] paragraph = {};
+    String tempString = "";
+    int startPos = 0;
+    int spacePos = 0;
+    int paragraphSize = 775;
+
+    for (int pos = 0; pos < t.length(); pos++) {
+      if (t.charAt(pos) == ' ' || t.charAt(pos) == '\n'){
+        spacePos = pos+1;
+      }
+      tempString += t.charAt(pos);
+
+      if (textWidth(tempString) > boxW || t.charAt(pos) == '\n'){
+        paragraph = append(paragraph, t.substring(startPos, spacePos));
+        pos = spacePos;
+        startPos = spacePos;
+        tempString = "";
+      }
+    }
+    paragraph = append(paragraph, t.substring(startPos, t.length()) + " ");
+    return paragraph;
   }
 }
