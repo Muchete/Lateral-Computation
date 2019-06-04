@@ -1,3 +1,7 @@
+::-webkit-scrollbar {
+  width: 0px;
+}
+
 .mw-editsection {
   display: none;
 }
@@ -234,6 +238,10 @@ mark,
 
 #resultDiv .toctitle h2 {
   margin-top: 0;
+}
+
+#copyright {
+  margin-top: 20px;
 }
 
 #copyright,
