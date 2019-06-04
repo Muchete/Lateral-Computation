@@ -236,6 +236,8 @@ mark,
   margin-top: 0;
 }
 
+#copyright,
+#copyright *,
 #resultDiv .reference,
 #resultDiv .reference a {
   color: gray;
@@ -297,6 +299,10 @@ tbody li {
 #resultDiv sup {
   font-size: 0.8rem;
   /* vertical-align: top; */
+}
+
+#resultDiv a.image {
+  pointer-events: none;
 }
 
 #resultDiv img {
@@ -379,9 +385,15 @@ tbody li {
 }
 
 @keyframes warning {
-  0% {color: white;}
-  5% {color: red;}
-  100% {color: white;}
+  0% {
+    color: white;
+  }
+  5% {
+    color: red;
+  }
+  100% {
+    color: white;
+  }
 }
 
 @media only screen and (max-width: 768px) {
