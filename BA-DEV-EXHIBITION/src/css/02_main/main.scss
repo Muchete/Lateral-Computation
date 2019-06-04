@@ -2,6 +2,11 @@
   width: 0px;
 }
 
+#resultDiv a.external,
+#copyright a {
+  pointer-events: none;
+}
+
 .mw-editsection {
   display: none;
 }
