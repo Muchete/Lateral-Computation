@@ -105,6 +105,10 @@ const link = document.querySelector("#link");
 const resultDiv = document.querySelector("#resultDiv");
 const userInput = document.querySelector("#userinput");
 
+let startTime;
+let lastCardPrinted = new Date();
+const cardPrintInterval = 2; //interval of print jobs in minutes should be set at 20!!!!
+let cardTracker;
 let term;
 let title;
 let cardTitle;
@@ -155,6 +159,14 @@ function parsedTime() {
 function random(min, max) {
   return Math.random() * (+max - +min) + +min;
 }
+
+// function timeOnArticle() {
+//   if (startTime) {
+//     return new Date() - startTime;
+//   } else {
+//     return 0;
+//   }
+// }
 
 // ----------------------------------------------------------------------------
 // SEARCH FUNCTIONS -----------------------------------------------------------
@@ -355,6 +367,8 @@ function gotParsed(data) {
 }
 
 function applyStyle() {
+  // startTime = new Date();
+
   //fix wiki links
   $(this)
     .find("a")
@@ -459,7 +473,7 @@ function applyStyle() {
     $("img").on("load", function(event) {
       imagesLoaded++;
       if (imagesLoaded == totalImages) {
-        sendCardInfo();
+        postCardJob();
         ready = true;
         showContent();
       }
@@ -474,7 +488,7 @@ function applyStyle() {
 // SEND CARD INFOS ------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-function sendCardInfo() {
+function postCardJob() {
   let imgEl;
   let imgURL;
 
@@ -515,12 +529,43 @@ function sendCardInfo() {
 
     let h = term.charAt(0).toUpperCase() + term.slice(1);
 
-    // if not SVG
-    //correctTitle would also work
-    //cardTitle would also work
-    //term would also work
-    client.publish("/cardInfo", "https:" + imgURL + "|" + h + "|" + plot);
+    // clearInterval(cardTracker);
+    // cardTracker = setInterval(function() {
+    //   console.log(timeOnArticle());
+    // }, 1000);
+
+    if (printAllowance()) {
+      setTimeout(function() {
+        sendCard(imgURL, h, plot);
+      }, 1000);
+    }
   }
+}
+
+function printAllowance() {
+  let now = new Date();
+  if (now - lastCardPrinted > cardPrintInterval * 60 * 1000) {
+    console.log("card '" + term + "' is being printed now: " + now);
+    lastCardPrinted = now;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function sendCard(image, header, plot) {
+  const popUpTime = 3000;
+  $("#cardAlert").fadeIn({
+    duration: "fast",
+    start: function() {
+      client.publish("/cardInfo", "https:" + image + "|" + header + "|" + plot);
+    },
+    complete: function() {
+      setTimeout(function() {
+        $("#cardAlert").fadeOut("fast");
+      }, popUpTime);
+    }
+  });
 }
 
 // ----------------------------------------------------------------------------
