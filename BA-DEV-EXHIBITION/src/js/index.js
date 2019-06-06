@@ -46,47 +46,47 @@ const svgPath = points => {
 // RESIZING OF SEARCHBOX ------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-$.fn.textWidth = function(text, font) {
-  if (!$.fn.textWidth.fakeEl)
-    $.fn.textWidth.fakeEl = $("<span>")
-      .hide()
-      .appendTo(document.body);
-
-  $.fn.textWidth.fakeEl
-    .text(
-      text ||
-        this.val().replace(/[ \t]+$/g, ".") ||
-        this.text() ||
-        this.attr("placeholder")
-    )
-    .css("font", font || this.css("font"));
-
-  return $.fn.textWidth.fakeEl.width();
-};
-
-$(".width-dynamic")
-  .on("input", setSearchField)
-  .trigger("input");
-
-function setSearchField() {
-  var inputWidth = $(".width-dynamic").textWidth();
-  $(".width-dynamic").css({
-    width: inputWidth
-  });
-}
-
-$(document).ready(function() {
-  setSearchField();
-});
-
-function inputWidth(elem, minW, maxW) {
-  elem = $(this);
-  // console.log(elem)
-}
-
-var targetElem = $(".width-dynamic");
-
-inputWidth(targetElem);
+// $.fn.textWidth = function(text, font) {
+//   if (!$.fn.textWidth.fakeEl)
+//     $.fn.textWidth.fakeEl = $("<span>")
+//       .hide()
+//       .appendTo(document.body);
+//
+//   $.fn.textWidth.fakeEl
+//     .text(
+//       text ||
+//         this.val().replace(/[ \t]+$/g, ".") ||
+//         this.text() ||
+//         this.attr("placeholder")
+//     )
+//     .css("font", font || this.css("font"));
+//
+//   return $.fn.textWidth.fakeEl.width();
+// };
+//
+// $(".width-dynamic")
+//   .on("input", setSearchField)
+//   .trigger("input");
+//
+// function setSearchField() {
+//   var inputWidth = $(".width-dynamic").textWidth();
+//   $(".width-dynamic").css({
+//     width: inputWidth
+//   });
+// }
+//
+// $(document).ready(function() {
+//   setSearchField();
+// });
+//
+// function inputWidth(elem, minW, maxW) {
+//   elem = $(this);
+//   // console.log(elem)
+// }
+//
+// var targetElem = $(".width-dynamic");
+//
+// inputWidth(targetElem);
 
 // ----------------------------------------------------------------------------
 // START MAIN -----------------------------------------------------------------
@@ -209,7 +209,7 @@ function prepareSearch(term) {
 }
 
 function resetSearch() {
-  setSearchField();
+  // setSearchField();
   emptyLines();
   hideContent();
 }
@@ -338,7 +338,7 @@ window.onpopstate = function(event) {
       });
     }
 
-    setSearchField();
+    // setSearchField();
   }
 };
 
@@ -574,7 +574,7 @@ function sendCard(image, header, plot) {
 
 window.onresize = function(event) {
   createLines();
-  setSearchField();
+  // setSearchField();
 };
 
 function emptyLines() {

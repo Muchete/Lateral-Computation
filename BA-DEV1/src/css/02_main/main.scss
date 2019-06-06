@@ -1,3 +1,31 @@
+// ::-webkit-scrollbar {
+//   width: 0px;
+// }
+
+//exhibition stuff
+// #resultDiv a.external,
+// #copyright a {
+//   pointer-events: none;
+// }
+
+// #cardAlert {
+//   position: fixed;
+//   top: 0;
+//   right: 0;
+//   left: 0;
+//   bottom: 0;
+//
+//   z-index: 10;
+//   background-color: black;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+#cardAlert span {
+  font-size: 2rem;
+}
+
 .mw-editsection {
   display: none;
 }
@@ -98,6 +126,7 @@ b {
 }
 
 mark,
+.highlighted,
 .term {
   /* animation:blinkingText 2s infinite; */
   animation: none;
@@ -149,7 +178,7 @@ mark,
   border-bottom: 2px solid gray;
   max-width: 200px;
   height: 41px;
-  width: 96.0469px;
+  width: 200px;
   overflow-x: scroll;
 
   /* align-self: center; */
@@ -236,6 +265,12 @@ mark,
   margin-top: 0;
 }
 
+#copyright {
+  margin-top: 20px;
+}
+
+#copyright,
+#copyright *,
 #resultDiv .reference,
 #resultDiv .reference a {
   color: gray;
@@ -294,9 +329,17 @@ tbody li {
   margin-bottom: 0;
 }
 
+#resultDiv #toc ul li {
+  list-style: none;
+}
+
 #resultDiv sup {
   font-size: 0.8rem;
   /* vertical-align: top; */
+}
+
+#resultDiv a.image {
+  pointer-events: none;
 }
 
 #resultDiv img {
@@ -379,9 +422,15 @@ tbody li {
 }
 
 @keyframes warning {
-  0% {color: white;}
-  5% {color: red;}
-  100% {color: white;}
+  0% {
+    color: white;
+  }
+  5% {
+    color: red;
+  }
+  100% {
+    color: white;
+  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -393,16 +442,16 @@ tbody li {
 
   .search {
     margin-left: 0;
-    margin-right: 30px;
+    margin-right: 20px;
     float: right;
     height: 30px;
-    max-width: none;
-    max-width: calc(50% - 30px);
+    max-width: calc(30% - 30px);
   }
 
   .btn-search {
     position: absolute;
     right: 0;
+    padding-right: 0;
     top: 10px;
   }
 }

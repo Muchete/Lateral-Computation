@@ -46,48 +46,47 @@ const svgPath = points => {
 // RESIZING OF SEARCHBOX ------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-$.fn.textWidth = function(text, font) {
-  if (!$.fn.textWidth.fakeEl)
-    $.fn.textWidth.fakeEl = $("<span>")
-      .hide()
-      .appendTo(document.body);
-
-  $.fn.textWidth.fakeEl
-    .text(
-      text ||
-        this.val().replace(/[ \t]+$/g, ".") ||
-        this.text() ||
-        this.attr("placeholder")
-    )
-    .css("font", font || this.css("font"));
-
-  return $.fn.textWidth.fakeEl.width();
-};
-
-$(".width-dynamic")
-  .on("input", setSearchField)
-  .trigger("input");
-
-function setSearchField() {
-  var inputWidth = $(".width-dynamic").textWidth();
-  $(".width-dynamic").css({
-    width: inputWidth
-  });
-  console.log(this);
-}
-
-$(document).ready(function() {
-  setSearchField();
-});
-
-function inputWidth(elem, minW, maxW) {
-  elem = $(this);
-  // console.log(elem)
-}
-
-var targetElem = $(".width-dynamic");
-
-inputWidth(targetElem);
+// $.fn.textWidth = function(text, font) {
+//   if (!$.fn.textWidth.fakeEl)
+//     $.fn.textWidth.fakeEl = $("<span>")
+//       .hide()
+//       .appendTo(document.body);
+//
+//   $.fn.textWidth.fakeEl
+//     .text(
+//       text ||
+//         this.val().replace(/[ \t]+$/g, ".") ||
+//         this.text() ||
+//         this.attr("placeholder")
+//     )
+//     .css("font", font || this.css("font"));
+//
+//   return $.fn.textWidth.fakeEl.width();
+// };
+//
+// $(".width-dynamic")
+//   .on("input", setSearchField)
+//   .trigger("input");
+//
+// function setSearchField() {
+//   var inputWidth = $(".width-dynamic").textWidth();
+//   $(".width-dynamic").css({
+//     width: inputWidth
+//   });
+// }
+//
+// $(document).ready(function() {
+//   setSearchField();
+// });
+//
+// function inputWidth(elem, minW, maxW) {
+//   elem = $(this);
+//   // console.log(elem)
+// }
+//
+// var targetElem = $(".width-dynamic");
+//
+// inputWidth(targetElem);
 
 // ----------------------------------------------------------------------------
 // START MAIN -----------------------------------------------------------------
@@ -106,6 +105,10 @@ const link = document.querySelector("#link");
 const resultDiv = document.querySelector("#resultDiv");
 const userInput = document.querySelector("#userinput");
 
+let startTime;
+let lastCardPrinted = new Date();
+const cardPrintInterval = 2; //interval of print jobs in minutes should be set at 20!!!!
+let cardTracker;
 let term;
 let title;
 let cardTitle;
@@ -157,6 +160,14 @@ function random(min, max) {
   return Math.random() * (+max - +min) + +min;
 }
 
+// function timeOnArticle() {
+//   if (startTime) {
+//     return new Date() - startTime;
+//   } else {
+//     return 0;
+//   }
+// }
+
 // ----------------------------------------------------------------------------
 // SEARCH FUNCTIONS -----------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -177,25 +188,46 @@ function searchTriggered() {
       prepareSearch(term);
     }
   } else {
-    $('#title').addClass('warn');
-    setTimeout(function(){
-      $('#title').removeClass('warn');
+    $("#title")
+      .add("#title .term")
+      .addClass("warn");
+    setTimeout(function() {
+      $("#title")
+        .add("#title .term")
+        .removeClass("warn");
     }, 500);
   }
 }
 
 function prepareSearch(term) {
   ready = false;
-  header.innerText = "Please Wait";
+  // header.innerText = "Please Wait";
+  hideHeader();
   hideContent(true);
   emptyLines();
   search(term);
 }
 
 function resetSearch() {
-  setSearchField();
+  // setSearchField();
   emptyLines();
   hideContent();
+}
+
+function hideBoth(del) {
+  $("#resultDiv").fadeOut({
+    duration: "fast",
+    // queue: false,
+    start: function() {
+      emptyLines();
+      $("#title").fadeOut("fast");
+    },
+    complete: function() {
+      if (del) {
+        $(this).empty();
+      }
+    }
+  });
 }
 
 function hideContent(del) {
@@ -208,12 +240,27 @@ function hideContent(del) {
 
 function showContent() {
   $("#resultDiv").fadeIn({
-    duration: "slow",
+    duration: "fast",
     // queue: false,
     start: function() {
       createLines();
     }
   });
+}
+
+function setHeader(txt, f) {
+  header.innerText = txt;
+  $("#title").fadeIn("fast", f);
+}
+
+function changeHeader(txt, f) {
+  $("#title").fadeOut("fast", function() {
+    setHeader(txt, f);
+  });
+}
+
+function hideHeader(f) {
+  $("#title").fadeOut("fast", f);
 }
 
 function search(term) {
@@ -238,26 +285,30 @@ function receivedSearch(data) {
     // title = "Pulau Biola";
     // title = "Titanic";
 
-    header.innerText = title;
-    // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
-    // console.log(
-    //   "Sent Article " +
-    //     index +
-    //     " of " +
-    //     data.query.search.length +
-    //     "to the receiver"
-    // );
-    title = title.replace(/\s+/g, "_");
-    link.href = "https://en.wikipedia.org/wiki/" + title;
+    // header.innerText = title;
+    // setHeader(title);
 
-    // console.log("Querying: " + title);
+    setHeader(title, function() {
+      // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
+      // console.log(
+      //   "Sent Article " +
+      //     index +
+      //     " of " +
+      //     data.query.search.length +
+      //     "to the receiver"
+      // );
+      title = title.replace(/\s+/g, "_");
+      link.href = "https://en.wikipedia.org/wiki/" + title;
 
-    setHistory();
-    let url = parseUrl + title;
-    $.getJSON(url, gotParsed);
+      // console.log("Querying: " + title);
+
+      setHistory();
+      let url = parseUrl + title;
+      $.getJSON(url, gotParsed);
+    });
   } else {
-    // console.log("no results");
-    header.innerText = "No results. Sorry!";
+    // header.innerText = "No results. Sorry!";
+    setHeader("No results. Sorry!");
     link.href = "#";
     ready = true;
   }
@@ -268,21 +319,27 @@ function receivedSearch(data) {
 // ----------------------------------------------------------------------------
 
 window.onpopstate = function(event) {
-  hideContent();
-  emptyLines();
+  console.log(event);
+  if (event.state) {
+    hideContent();
+    emptyLines();
 
-  if (event.state.home) {
-    userInput.value = "";
-    header.innerText = "";
-    resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
-  } else {
-    userInput.value = event.state.term;
-    header.innerText = event.state.cardTitle;
-    let url = parseUrl + event.state.title;
-    $.getJSON(url, gotParsed);
+    if (event.state.home) {
+      // userInput.value = "";
+      // header.innerText = "";
+      // resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
+      hideHeader();
+    } else {
+      userInput.value = event.state.term;
+      // header.innerText = event.state.cardTitle;
+      changeHeader(event.state.cardTitle, function() {
+        let url = parseUrl + event.state.title;
+        $.getJSON(url, gotParsed);
+      });
+    }
+
+    // setSearchField();
   }
-
-  setSearchField();
 };
 
 function setHistory() {
@@ -310,6 +367,8 @@ function gotParsed(data) {
 }
 
 function applyStyle() {
+  // startTime = new Date();
+
   //fix wiki links
   $(this)
     .find("a")
@@ -321,16 +380,26 @@ function applyStyle() {
           $(this).attr("href", "#");
           $(this).click(function(event) {
             if ($(this).attr("title")) {
-              header.innerText = $(this).attr("title");
-              hideContent();
-              emptyLines();
-              let x = $(this)
-                .attr("title")
-                .replace(/\s+/g, "_");
-              link.href = "https://en.wikipedia.org/wiki/" + x;
-              let url = parseUrl + x;
+              let t = $(this).attr("title");
+              $("#title").fadeOut({
+                duration: "fast",
+                start: function() {
+                  hideContent();
+                  emptyLines();
+                },
+                complete: function() {
+                  header.innerText = t;
+                  $("#title").fadeIn({
+                    complete: function() {
+                      let x = t.replace(/\s+/g, "_");
+                      link.href = "https://en.wikipedia.org/wiki/" + x;
+                      let url = parseUrl + x;
 
-              $.getJSON(url, gotParsed);
+                      $.getJSON(url, gotParsed);
+                    }
+                  });
+                }
+              });
             }
           });
         }
@@ -397,8 +466,21 @@ function applyStyle() {
     .find("*")
     .on("load", createLines);
 
-  ready = true;
-  showContent();
+  //send card info, once images are Loaded
+  let imagesLoaded = 0;
+  let totalImages = $(this).find("img").length;
+  if (totalImages) {
+    $("img").on("load", function(event) {
+      imagesLoaded++;
+      if (imagesLoaded == totalImages) {
+        ready = true;
+        showContent();
+      }
+    });
+  } else {
+    ready = true;
+    showContent();
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -407,7 +489,7 @@ function applyStyle() {
 
 window.onresize = function(event) {
   createLines();
-  setSearchField();
+  // setSearchField();
 };
 
 function emptyLines() {
@@ -436,5 +518,5 @@ function createLines() {
   });
 
   roundSvg.innerHTML = svgPath(lineList);
-  $("#svgContainer").fadeIn("slow");
+  $("#svgContainer").fadeIn("fast");
 }

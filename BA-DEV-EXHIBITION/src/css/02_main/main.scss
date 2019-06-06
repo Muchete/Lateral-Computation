@@ -178,7 +178,7 @@ mark,
   border-bottom: 2px solid gray;
   max-width: 200px;
   height: 41px;
-  width: 96.0469px;
+  width: 200px;
   overflow-x: scroll;
 
   /* align-self: center; */
@@ -329,6 +329,10 @@ tbody li {
   margin-bottom: 0;
 }
 
+#resultDiv #toc ul li {
+  list-style: none;
+}
+
 #resultDiv sup {
   font-size: 0.8rem;
   /* vertical-align: top; */
@@ -438,16 +442,16 @@ tbody li {
 
   .search {
     margin-left: 0;
-    margin-right: 30px;
+    margin-right: 20px;
     float: right;
     height: 30px;
-    max-width: none;
-    max-width: calc(50% - 30px);
+    max-width: calc(30% - 30px);
   }
 
   .btn-search {
     position: absolute;
     right: 0;
+    padding-right: 0;
     top: 10px;
   }
 }
