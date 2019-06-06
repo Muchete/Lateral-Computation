@@ -2,6 +2,7 @@ class Card {
   // PShader blur;
   Image bg;
   boolean ready = false;
+  boolean printed = true;
   int topMargin = 20;
   int leftMargin = 15;
 
@@ -33,6 +34,7 @@ class Card {
     //set default Value
     set(defaultURL,h,p);
     ready = false;
+    printed = true;
 
     // p = "Shanghai (Chinese: 上海, Mandarin pronunciation: [ʂâŋ.xài] (About this soundlisten); Shanghainese pronunciation: [zɑ̃.hɛ] (About this soundlisten)) is one of the four municipalities under the direct administration of the central government of the People's Republic of China, the largest city in China by population, and the largest city proper in the world, with a population of 26.3 million as of 2019.[13][14] It is a global financial center[15] and transport hub, with the world's busiest container port.[16] Located in the Yangtze River Delta, it sits on the south edge of the estuary of the Yangtze in the middle portion of the Eastern China coast. The municipality borders the provinces of Jiangsu and Zhejiang to the south, east and west, and is bound to the east by the East China Sea.[17]";
   }
@@ -60,6 +62,7 @@ class Card {
     h = header;
     p = plot;
     ready = true;
+    printed = false;
     // drawBlurBG();
   }
 

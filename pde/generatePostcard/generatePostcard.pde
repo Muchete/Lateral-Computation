@@ -35,6 +35,11 @@ void draw () {
   rotate(PI/2);
 
   card.display();
+
+  if (!card.printed && card.ready){
+    printCard();
+    card.printed = true;
+  }
 }
 
 void messageReceived(String topic, byte[] payload) {
@@ -42,6 +47,11 @@ void messageReceived(String topic, byte[] payload) {
 
   String[] info = split(msg, '|');
   card.set(info[0],info[1],info[2]);
+}
+
+void printCard(){
+  String fname =  str(day()) + str(hour()) + str(minute()) + card.h;
+  save("/Applications/MAMP/htdocs/BA-Experiments/pde/generatePostcard/prints/"+fname+".jpg");
 }
 
 void keyPressed(){
