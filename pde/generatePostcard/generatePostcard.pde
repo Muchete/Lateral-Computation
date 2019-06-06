@@ -46,7 +46,12 @@ void messageReceived(String topic, byte[] payload) {
   String msg = new String(payload);
 
   String[] info = split(msg, '|');
-  card.set(info[0],info[1],info[2]);
+  try {
+    card.set(info[0],info[1],info[2]);
+  } catch (Exception x) {
+    println("card couldn't be loaded");
+    println("Err: " + x);
+  }
 }
 
 void printCard(){
