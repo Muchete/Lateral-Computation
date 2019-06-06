@@ -48,10 +48,11 @@ void keyPressed(){
   String fname =  str(day()) + str(hour()) + str(minute()) + card.h;
   switch (key) {
     case 'p':
-      save("prints/"+fname+".jpg");
+      save("/Applications/MAMP/htdocs/BA-Experiments/pde/generatePostcard/prints/"+fname+".jpg");
+
       break;
     case 's':
-      save("exports/"+fname+".jpg");
+      save("/Applications/MAMP/htdocs/BA-Experiments/pde/generatePostcard/exports/"+fname+".jpg");
       break;
   }
 }
