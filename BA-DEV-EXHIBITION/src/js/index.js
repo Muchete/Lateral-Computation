@@ -109,7 +109,10 @@ let startTime;
 let lastCardPrinted = new Date();
 const cardPrintInterval = 2; //interval of print jobs in minutes should be set at 20!!!!
 let cardTracker;
+let manualOverride = false;
+
 let term;
+let backupTerm;
 let title;
 let cardTitle;
 let correctTitle;
@@ -185,8 +188,17 @@ function searchTriggered() {
   if (ready) {
     term = userInput.value;
     if (term) {
-      prepareSearch(term);
+      if (term == "muchete make a card please") {
+        userInput.value = backupTerm;
+        term = backupTerm;
+        console.log("manual Print!");
+        manualOverride = true;
+        postCardJob();
+      } else {
+        prepareSearch(term);
+      }
     }
+    backupTerm = term;
   } else {
     $("#title")
       .add("#title .term")
@@ -547,6 +559,9 @@ function printAllowance() {
   if (now - lastCardPrinted > cardPrintInterval * 60 * 1000) {
     console.log("card '" + term + "' is being printed now: " + now);
     lastCardPrinted = now;
+    return true;
+  } else if (manualOverride) {
+    manualOverride = false;
     return true;
   } else {
     return false;
