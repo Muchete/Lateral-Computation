@@ -107,7 +107,8 @@ const userInput = document.querySelector("#userinput");
 
 let startTime;
 let lastCardPrinted = new Date();
-const cardPrintInterval = 2; //interval of print jobs in minutes should be set at 20!!!!
+const cardPrintInterval = 15; //interval of print jobs in minutes should be set at 20!!!!
+const popUpTime = 15000;
 let cardTracker;
 let manualOverride = false;
 
@@ -569,7 +570,6 @@ function printAllowance() {
 }
 
 function sendCard(image, header, plot) {
-  const popUpTime = 3000;
   $("#cardAlert").fadeIn({
     duration: "fast",
     start: function() {
