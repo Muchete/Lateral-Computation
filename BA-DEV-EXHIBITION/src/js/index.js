@@ -277,7 +277,9 @@ function hideHeader(f) {
 }
 
 function errorHandler(e) {
-  alert("Error: " + e);
+  setHeader("No results. Sorry!");
+  link.href = "#";
+  ready = true;
 }
 
 function search(term) {
@@ -337,10 +339,7 @@ function receivedSearch(data) {
         .fail(errorHandler);
     });
   } else {
-    // header.innerText = "No results. Sorry!";
-    setHeader("No results. Sorry!");
-    link.href = "#";
-    ready = true;
+    errorHandler("No results. Sorry!");
   }
 }
 
@@ -601,7 +600,7 @@ function sendCard(image, header, plot) {
   $("#cardAlert").fadeIn({
     duration: "fast",
     start: function() {
-      // client.publish("/cardInfo", "https:" + image + "|" + header + "|" + plot);
+      client.publish("/cardInfo", "https:" + image + "|" + header + "|" + plot);
     },
     complete: function() {
       setTimeout(function() {
