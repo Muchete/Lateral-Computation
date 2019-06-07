@@ -276,10 +276,21 @@ function hideHeader(f) {
   $("#title").fadeOut("fast", f);
 }
 
+function errorHandler(e) {
+  alert("Error: " + e);
+}
+
 function search(term) {
   let url = searchUrl + term;
   // console.log("looking for " + url);
-  $.getJSON(url, receivedSearch);
+  // $.getJSON(url, receivedSearch);
+
+  $.ajax({
+    url: url,
+    dataType: "json"
+  })
+    .done(receivedSearch)
+    .fail(errorHandler);
 }
 
 function receivedSearch(data) {
@@ -317,7 +328,13 @@ function receivedSearch(data) {
 
       setHistory();
       let url = parseUrl + title;
-      $.getJSON(url, gotParsed);
+      // $.getJSON(url, gotParsed);
+      $.ajax({
+        url: url,
+        dataType: "json"
+      })
+        .done(gotParsed)
+        .fail(errorHandler);
     });
   } else {
     // header.innerText = "No results. Sorry!";
@@ -347,7 +364,13 @@ window.onpopstate = function(event) {
       // header.innerText = event.state.cardTitle;
       changeHeader(event.state.cardTitle, function() {
         let url = parseUrl + event.state.title;
-        $.getJSON(url, gotParsed);
+        // $.getJSON(url, gotParsed);
+        $.ajax({
+          url: url,
+          dataType: "json"
+        })
+          .done(gotParsed)
+          .fail(errorHandler);
       });
     }
 
@@ -407,8 +430,13 @@ function applyStyle() {
                       let x = t.replace(/\s+/g, "_");
                       link.href = "https://en.wikipedia.org/wiki/" + x;
                       let url = parseUrl + x;
-
-                      $.getJSON(url, gotParsed);
+                      // $.getJSON(url, gotParsed);
+                      $.ajax({
+                        url: url,
+                        dataType: "json"
+                      })
+                        .done(gotParsed)
+                        .fail(errorHandler);
                     }
                   });
                 }
@@ -573,7 +601,7 @@ function sendCard(image, header, plot) {
   $("#cardAlert").fadeIn({
     duration: "fast",
     start: function() {
-      client.publish("/cardInfo", "https:" + image + "|" + header + "|" + plot);
+      // client.publish("/cardInfo", "https:" + image + "|" + header + "|" + plot);
     },
     complete: function() {
       setTimeout(function() {
