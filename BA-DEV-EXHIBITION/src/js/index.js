@@ -191,7 +191,7 @@ function searchTriggered() {
   if (ready) {
     term = userInput.value;
     if (term) {
-      if (term == "muchete make a card please") {
+      if (term == "muchete make a card please" || term == "ba print") {
         userInput.value = backupTerm;
         term = backupTerm;
         console.log("manual Print!");
