@@ -111,6 +111,8 @@ const cardPrintInterval = 15; //interval of print jobs in minutes should be set 
 const popUpTime = 15000;
 let cardTracker;
 let manualOverride = false;
+let presentationOverride = false;
+let presentationOverrideReady = true;
 
 let term;
 let backupTerm;
@@ -195,11 +197,15 @@ function searchTriggered() {
         console.log("manual Print!");
         manualOverride = true;
         postCardJob();
+      } else if (term == "final presentation" && presentationOverrideReady) {
+        presentationOverride = true;
+        presentationOverrideReady = false;
+        prepareSearch(term);
       } else {
         prepareSearch(term);
       }
+      backupTerm = term;
     }
-    backupTerm = term;
   } else {
     $("#title")
       .add("#title .term")
@@ -302,17 +308,21 @@ function receivedSearch(data) {
       Math.floor(random(minAccuracy, maxAccuracy) * data.query.search.length);
 
     title = data.query.search[index].title;
-    cardTitle = title;
-
     correctTitle = data.query.search[0].title;
 
     // set fixed title for a specific article.
     // title = "Jōetsu Line";
     // title = "Pulau Biola";
-    // title = "Titanic";
+
+    if (presentationOverride) {
+      title = "National Thanksgiving Turkey Presentation";
+      presentationOverride = false;
+    }
 
     // header.innerText = title;
     // setHeader(title);
+
+    cardTitle = title;
 
     setHeader(title, function() {
       // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
@@ -392,6 +402,9 @@ function setHistory() {
 // ----------------------------------------------------------------------------
 
 function gotParsed(data) {
+  if (!data.parse.text) {
+  }
+
   let txt = data.parse.text["*"];
   // console.log(txt);
 
@@ -506,21 +519,19 @@ function applyStyle() {
     .find("*")
     .on("load", createLines);
 
+  ready = true;
+  showContent();
+
   //send card info, once images are Loaded
-  let imagesLoaded = 0;
   let totalImages = $(this).find("img").length;
   if (totalImages) {
+    let imagesLoaded = 0;
     $("img").on("load", function(event) {
       imagesLoaded++;
       if (imagesLoaded == totalImages) {
         postCardJob();
-        ready = true;
-        showContent();
       }
     });
-  } else {
-    ready = true;
-    showContent();
   }
 }
 
