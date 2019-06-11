@@ -162,7 +162,7 @@ class Card {
       tempString += t.charAt(pos);
 
       if (textWidth(tempString) > boxW || t.charAt(pos) == '\n'){
-        paragraph = append(paragraph, t.substring(startPos, spacePos));
+        paragraph = append(paragraph, t.substring(startPos, spacePos).replace("\n"," "));
         pos = spacePos;
         startPos = spacePos;
         tempString = "";
