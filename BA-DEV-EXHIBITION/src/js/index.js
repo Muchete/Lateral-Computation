@@ -623,7 +623,10 @@ function postCardJob() {
 
 function printAllowance() {
   let now = new Date();
-  if (now - lastCardPrinted > cardPrintInterval * 60 * 1000) {
+  if (
+    now - lastCardPrinted > cardPrintInterval * 60 * 1000 &&
+    hasVisitedThree()
+  ) {
     console.log("card '" + term + "' is being printed now: " + now);
     lastCardPrinted = now;
     return true;
