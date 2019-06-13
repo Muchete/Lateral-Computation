@@ -105,6 +105,9 @@ const link = document.querySelector("#link");
 const resultDiv = document.querySelector("#resultDiv");
 const userInput = document.querySelector("#userinput");
 
+let lastArticles = [new Date("1990"), new Date("1990")];
+const articleTime = 3; //in minutes, how old the oldest article should be
+
 let startTime;
 let lastCardPrinted = new Date();
 const cardPrintInterval = 12; //interval of print jobs in minutes should be set at 20!!!!
@@ -133,6 +136,20 @@ window.history.pushState({ home: true }, "");
 // ----------------------------------------------------------------------------
 // GENERAL FUNCTIONS ----------------------------------------------------------
 // ----------------------------------------------------------------------------
+
+function addHistory() {
+  lastArticles.unshift(new Date());
+  lastArticles.splice(-1, 1);
+}
+
+function hasVisitedThree() {
+  let now = new Date();
+  if (now - lastArticles[lastArticles.length - 1] < articleTime * 60 * 1000) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 $.fn.random = function() {
   return this.eq(Math.floor(Math.random() * this.length));
@@ -224,6 +241,7 @@ function prepareSearch(term) {
   hideHeader();
   hideContent(true);
   emptyLines();
+
   search(term);
 }
 
@@ -408,16 +426,17 @@ function setHistory() {
 // ----------------------------------------------------------------------------
 
 function gotParsed(data) {
-  if (!data.parse.text) {
+  try {
+    let txt = data.parse.text["*"];
+    // console.log(txt);
+
+    $("#resultDiv")
+      .html(txt)
+      .promise()
+      .done(applyStyle);
+  } catch (e) {
+    errorHandler("Couldn't load article. Sorry!");
   }
-
-  let txt = data.parse.text["*"];
-  // console.log(txt);
-
-  $("#resultDiv")
-    .html(txt)
-    .promise()
-    .done(applyStyle);
 }
 
 function applyStyle() {
@@ -528,6 +547,7 @@ function applyStyle() {
     .on("load", createLines);
 
   ready = true;
+  addHistory();
   showContent();
 
   //send card info, once images are Loaded
@@ -596,7 +616,7 @@ function postCardJob() {
     if (printAllowance()) {
       setTimeout(function() {
         sendCard(imgURL, h, plot);
-      }, 1000);
+      }, 100);
     }
   }
 }
