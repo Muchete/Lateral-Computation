@@ -107,7 +107,7 @@ const userInput = document.querySelector("#userinput");
 
 let startTime;
 let lastCardPrinted = new Date();
-const cardPrintInterval = 15; //interval of print jobs in minutes should be set at 20!!!!
+const cardPrintInterval = 12; //interval of print jobs in minutes should be set at 20!!!!
 const popUpTime = 15000;
 let cardTracker;
 let manualOverride = false;
@@ -283,7 +283,7 @@ function hideHeader(f) {
 }
 
 function errorHandler(e) {
-  setHeader("No results. Sorry!");
+  setHeader(e);
   link.href = "#";
   ready = true;
 }
@@ -298,7 +298,9 @@ function search(term) {
     dataType: "json"
   })
     .done(receivedSearch)
-    .fail(errorHandler);
+    .fail(function() {
+      errorHandler("Search Failed. Sorry!");
+    });
 }
 
 function receivedSearch(data) {
@@ -346,7 +348,9 @@ function receivedSearch(data) {
         dataType: "json"
       })
         .done(gotParsed)
-        .fail(errorHandler);
+        .fail(function() {
+          errorHandler("Couldn't load article. Sorry!");
+        });
     });
   } else {
     errorHandler("No results. Sorry!");
@@ -379,7 +383,9 @@ window.onpopstate = function(event) {
           dataType: "json"
         })
           .done(gotParsed)
-          .fail(errorHandler);
+          .fail(function() {
+            errorHandler("Couldn't load article. Sorry!");
+          });
       });
     }
 
@@ -448,7 +454,9 @@ function applyStyle() {
                         dataType: "json"
                       })
                         .done(gotParsed)
-                        .fail(errorHandler);
+                        .fail(function() {
+                          errorHandler("Couldn't load article. Sorry!");
+                        });
                     }
                   });
                 }
