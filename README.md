@@ -8,6 +8,6 @@ The presence of computer networks and the associated algorithms rises daily. Fil
 
 [lateralcomputation.ch](https://lateralcomputation.ch) is a serendipitous knowledge retrieval system. It queries articles from the MediaWiki API and displays unexpected, yet related articles. The yellow line indicates the occurrences of the searched term within the article.
 
-## Postcard generator
+## Postcard generator
 
 The exhibition setup featured the regular website as well as a Processing sketch to generate Postcards, matching the current experience.
