@@ -308,8 +308,6 @@ function errorHandler(e) {
 
 function search(term) {
   let url = searchUrl + term;
-  // console.log("looking for " + url);
-  // $.getJSON(url, receivedSearch);
 
   $.ajax({
     url: url,
@@ -360,7 +358,6 @@ function receivedSearch(data) {
 
       setHistory();
       let url = parseUrl + title;
-      // $.getJSON(url, gotParsed);
       $.ajax({
         url: url,
         dataType: "json"
