@@ -4,6 +4,8 @@
 
 // The smoothing ratio
 const smoothing = 0.25;
+const lineAnimation = false;
+let newLine = true;
 
 const line = (pointA, pointB) => {
   const lengthX = pointB[0] - pointA[0];
@@ -76,24 +78,20 @@ function setSearchField() {
   });
 }
 
-$(document).ready(function() {
-  setSearchField();
-});
+$(document).ready(setSearchField);
 
 function inputWidth(elem, minW, maxW) {
   elem = $(this);
-  // console.log(elem)
 }
 
 var targetElem = $(".width-dynamic");
 
 inputWidth(targetElem);
+setSearchField();
 
 // ----------------------------------------------------------------------------
 // START MAIN -----------------------------------------------------------------
 // ----------------------------------------------------------------------------
-
-let debug = true;
 
 const searchUrl =
   "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&utf8=&format=json&srlimit=500&srsearch=";
@@ -109,11 +107,9 @@ const userInput = document.querySelector("#userinput");
 let lastArticles = [new Date("1990"), new Date("1990")];
 const articleTime = 3; //in minutes, how old the oldest article should be
 
-let startTime;
 let lastCardPrinted = new Date();
 const cardPrintInterval = 12; //interval of print jobs in minutes should be set at 20!!!!
 const popUpTime = 15000;
-let cardTracker;
 let manualOverride = false;
 let presentationOverride = false;
 let presentationOverrideReady = true;
@@ -130,7 +126,6 @@ let minAccuracy = 0.65;
 
 //line stuff
 let lineList = [];
-let curLinePos = 0;
 
 window.history.pushState({ home: true }, "");
 
@@ -184,20 +179,12 @@ function random(min, max) {
   return Math.random() * (+max - +min) + +min;
 }
 
-// function timeOnArticle() {
-//   if (startTime) {
-//     return new Date() - startTime;
-//   } else {
-//     return 0;
-//   }
-// }
-
 // ----------------------------------------------------------------------------
 // SEARCH FUNCTIONS -----------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 $("#userinput").keypress(function(event) {
-  var keycode = event.keyCode ? event.keyCode : event.which;
+  let keycode = event.keyCode ? event.keyCode : event.which;
   if (keycode == "13") {
     searchTriggered();
   }
@@ -238,6 +225,7 @@ function searchTriggered() {
 
 function prepareSearch(term) {
   ready = false;
+  newLine = true;
   // header.innerText = "Please Wait";
   hideHeader();
   hideContent(true);
@@ -253,52 +241,88 @@ function resetSearch() {
 }
 
 function hideBoth(del) {
-  $("#resultDiv").fadeOut({
-    duration: "fast",
-    // queue: false,
-    start: function() {
-      emptyLines();
-      $("#title").fadeOut("fast");
-    },
-    complete: function() {
+  emptyLines();
+  $("#title")
+    .stop()
+    .fadeTo("fast", 0);
+  $("#resultDiv")
+    .stop()
+    .fadeTo("fast", 0, function() {
       if (del) {
         $(this).empty();
       }
-    }
-  });
+    });
+
+  // $("#resultDiv").fadeOut({
+  //   duration: "fast",
+  //   // queue: false,
+  //   start: function() {
+  //     emptyLines();
+  //     $("#title").fadeOut("fast");
+  //   },
+  //   complete: function() {
+  //     if (del) {
+  //       $(this).empty();
+  //     }
+  //   }
+  // });
 }
 
 function hideContent(del) {
-  $("#resultDiv").fadeOut("fast", function() {
-    if (del) {
-      $(this).empty();
-    }
-  });
+  $("#resultDiv")
+    .stop()
+    .fadeTo("fast", 0, function() {
+      if (del) {
+        $(this).empty();
+      }
+    });
+
+  // $("#resultDiv").fadeOut("fast", function() {
+  //   if (del) {
+  //     $(this).empty();
+  //   }
+  // });
 }
 
 function showContent() {
-  $("#resultDiv").fadeIn({
-    duration: "fast",
-    // queue: false,
-    start: function() {
-      createLines();
-    }
-  });
+  createLines();
+  $("#resultDiv")
+    .stop()
+    .fadeTo("fast", 1);
+  // $("#resultDiv").fadeIn({
+  //   duration: "fast",
+  //   // queue: false,
+  //   start: function() {
+  //     createLines();
+  //   }
+  // });
 }
 
 function setHeader(txt, f) {
   header.innerText = txt;
-  $("#title").fadeIn("fast", f);
+  $("#title")
+    .stop()
+    .fadeTo("fast", 1, f);
+  // $("#title").fadeIn("fast", f);
 }
 
 function changeHeader(txt, f) {
-  $("#title").fadeOut("fast", function() {
-    setHeader(txt, f);
-  });
+  $("#title")
+    .stop()
+    .fadeTo("fast", 0, function() {
+      setHeader(txt, f);
+    });
+
+  // $("#title").fadeOut("fast", function() {
+  //   setHeader(txt, f);
+  // });
 }
 
 function hideHeader(f) {
-  $("#title").fadeOut("fast", f);
+  $("#title")
+    .stop()
+    .fadeTo("fast", 0, f);
+  // $("#title").fadeOut("fast", f);
 }
 
 function errorHandler(e) {
@@ -330,10 +354,6 @@ function receivedSearch(data) {
     title = data.query.search[index].title;
     correctTitle = data.query.search[0].title;
 
-    // set fixed title for a specific article.
-    // title = "Jōetsu Line";
-    // title = "Pulau Biola";
-
     if (presentationOverride) {
       title = "National Thanksgiving Turkey Presentation";
       presentationOverride = false;
@@ -345,17 +365,8 @@ function receivedSearch(data) {
     cardTitle = title;
 
     setHeader(title, function() {
-      // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
-      // console.log(
-      //   "Sent Article " +
-      //     index +
-      //     " of " +
-      //     data.query.search.length +
-      //     "to the receiver"
-      // );
       title = title.replace(/\s+/g, "_");
       link.href = "https://en.wikipedia.org/wiki/" + title;
-
       // console.log("Querying: " + title);
 
       setHistory();
@@ -394,7 +405,6 @@ window.onpopstate = function(event) {
       // header.innerText = event.state.cardTitle;
       changeHeader(event.state.cardTitle, function() {
         let url = parseUrl + event.state.title;
-        // $.getJSON(url, gotParsed);
         $.ajax({
           url: url,
           dataType: "json"
@@ -439,8 +449,6 @@ function gotParsed(data) {
 }
 
 function applyStyle() {
-  // startTime = new Date();
-
   //fix wiki links
   $(this)
     .find("a")
@@ -453,20 +461,20 @@ function applyStyle() {
           $(this).click(function(event) {
             if ($(this).attr("title")) {
               let t = $(this).attr("title");
-              $("#title").fadeOut({
-                duration: "fast",
-                start: function() {
-                  hideContent();
-                  emptyLines();
-                },
-                complete: function() {
+
+              hideContent();
+              emptyLines();
+              $("#title")
+                .stop()
+                .fadeTo("fast", 0, function() {
                   header.innerText = t;
-                  $("#title").fadeIn({
-                    complete: function() {
+                  $("#title")
+                    .stop()
+                    .fadeTo("fast", 1, function() {
                       let x = t.replace(/\s+/g, "_");
                       link.href = "https://en.wikipedia.org/wiki/" + x;
                       let url = parseUrl + x;
-                      // $.getJSON(url, gotParsed);
+
                       $.ajax({
                         url: url,
                         dataType: "json"
@@ -475,10 +483,35 @@ function applyStyle() {
                         .fail(function() {
                           errorHandler("Couldn't load article. Sorry!");
                         });
-                    }
-                  });
-                }
-              });
+                    });
+                });
+
+              // $("#title").fadeOut({
+              //   duration: "fast",
+              //   start: function() {
+              //     hideContent();
+              //     emptyLines();
+              //   },
+              //   complete: function() {
+              //     header.innerText = t;
+              //     $("#title").fadeIn({
+              //       complete: function() {
+              //         let x = t.replace(/\s+/g, "_");
+              //         link.href = "https://en.wikipedia.org/wiki/" + x;
+              //         let url = parseUrl + x;
+
+              //         $.ajax({
+              //           url: url,
+              //           dataType: "json"
+              //         })
+              //           .done(gotParsed)
+              //           .fail(function() {
+              //             errorHandler("Couldn't load article. Sorry!");
+              //           });
+              //       }
+              //     });
+              //   }
+              // });
             }
           });
         }
@@ -607,11 +640,6 @@ function postCardJob() {
 
     let h = term.charAt(0).toUpperCase() + term.slice(1);
 
-    // clearInterval(cardTracker);
-    // cardTracker = setInterval(function() {
-    //   console.log(timeOnArticle());
-    // }, 1000);
-
     if (printAllowance()) {
       setTimeout(function() {
         sendCard(imgURL, h, plot);
@@ -661,11 +689,14 @@ window.onresize = function(event) {
 };
 
 function emptyLines() {
-  $("#svgContainer").fadeOut("fast", function() {
-    $(this)
-      .find("svg")
-      .empty();
-  });
+  $("#svgContainer")
+    .stop()
+    .fadeTo("fast", 0, function() {
+      $(this)
+        .find("svg")
+        .empty();
+      newLine = true;
+    });
 }
 
 function createLines() {
@@ -677,7 +708,7 @@ function createLines() {
   let y = t.position().top - parent.offset().top + t.height() / 2;
   lineList.push([x, y]);
 
-  $("span.term").each(function(index, el) {
+  $("span.term").each(function() {
     t = $(this);
     x = t.offset().left - parent.offset().left + t.width() / 2;
     y = t.offset().top - parent.offset().top + t.height() / 2;
@@ -686,7 +717,31 @@ function createLines() {
   });
 
   roundSvg.innerHTML = svgPath(lineList);
-  $("#svgContainer").fadeIn("fast");
+
+  if (lineAnimation) {
+    let pathLength = document.querySelector("#round-svg path").getTotalLength();
+    newLine = false;
+    $("#round-svg path").css({
+      "stroke-dasharray": pathLength,
+      "stroke-dashoffset": pathLength
+    });
+    if (newLine) {
+      let t = Math.floor(pathLength / 800);
+      // setTimeout(() => {
+      //   newLine = false;
+      // }, t * 1000);
+      $("#round-svg path").css({
+        "stroke-dasharray": pathLength,
+        "stroke-dashoffset": pathLength,
+        animation: "dash " + t + "s linear forwards"
+      });
+    }
+  }
+
+  $("#svgContainer")
+    .stop()
+    .fadeTo("fast", 1);
+  // $("#svgContainer").fadeIn("fast");
 }
 
 // ----------------------------------------------------------------------------

@@ -170,13 +170,17 @@ mark,
   font-size: 2rem;
 }
 
+.fakeEl {
+  font-size: 2rem;
+}
+
 .search {
   font-size: 2rem;
   background-color: transparent;
   color: yellow;
   border: 0;
   border-bottom: 2px solid gray;
-  max-width: 300px;
+  max-width: 850px;
   height: 41px;
   width: 300px;
   overflow-x: scroll;
@@ -385,6 +389,16 @@ tbody li {
   stroke: yellow;
 }
 
+#svgContainer path {
+  // animation: dash 5s linear forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* MOBILE VIEW!! */
 
 @media only screen and (max-width: 1024px) {
@@ -436,6 +450,7 @@ tbody li {
 @media only screen and (max-width: 768px) {
   .proj-title,
   .search,
+  .fakeEl,
   .btn-search {
     font-size: 1.5rem;
   }
