@@ -42,57 +42,65 @@ const svgPath = points => {
   return `<path d="${d}" fill="none" />`;
 };
 
+const svgPathD = points => {
+  return points.reduce(
+    (acc, point, i, a) =>
+      i === 0
+        ? `M ${point[0]},${point[1]}`
+        : `${acc} ${bezierCommand(point, i, a)}`,
+    ""
+  );
+};
+
 // ----------------------------------------------------------------------------
 // RESIZING OF SEARCHBOX ------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-// $.fn.textWidth = function(text, font) {
-//   if (!$.fn.textWidth.fakeEl)
-//     $.fn.textWidth.fakeEl = $("<span>")
-//       .hide()
-//       .appendTo(document.body);
-//
-//   $.fn.textWidth.fakeEl
-//     .text(
-//       text ||
-//         this.val().replace(/[ \t]+$/g, ".") ||
-//         this.text() ||
-//         this.attr("placeholder")
-//     )
-//     .css("font", font || this.css("font"));
-//
-//   return $.fn.textWidth.fakeEl.width();
-// };
-//
-// $(".width-dynamic")
-//   .on("input", setSearchField)
-//   .trigger("input");
-//
-// function setSearchField() {
-//   var inputWidth = $(".width-dynamic").textWidth();
-//   $(".width-dynamic").css({
-//     width: inputWidth
-//   });
-// }
-//
-// $(document).ready(function() {
-//   setSearchField();
-// });
-//
-// function inputWidth(elem, minW, maxW) {
-//   elem = $(this);
-//   // console.log(elem)
-// }
-//
-// var targetElem = $(".width-dynamic");
-//
-// inputWidth(targetElem);
+$.fn.textWidth = function(text, font) {
+  if (!$.fn.textWidth.fakeEl)
+    $.fn.textWidth.fakeEl = $("<span>")
+      .hide()
+      .addClass("fakeEl")
+      .appendTo(document.body);
+
+  $.fn.textWidth.fakeEl
+    .text(
+      text ||
+        this.val().replace(/[ \t]+$/g, ".") ||
+        this.text() ||
+        this.attr("placeholder")
+    )
+    .css("font", font || this.css("font"));
+
+  return $.fn.textWidth.fakeEl.width();
+};
+
+$(".width-dynamic")
+  .on("input", setSearchField)
+  .trigger("input");
+
+function setSearchField() {
+  var inputWidth = $(".width-dynamic").textWidth() + 4;
+  $(".width-dynamic").css({
+    width: inputWidth
+  });
+}
+
+$(document).ready(function() {
+  setSearchField();
+});
+
+function inputWidth(elem, minW, maxW) {
+  elem = $(this);
+}
+
+var targetElem = $(".width-dynamic");
+
+inputWidth(targetElem);
 
 // ----------------------------------------------------------------------------
 // START MAIN -----------------------------------------------------------------
 // ----------------------------------------------------------------------------
-
-let debug = true;
 
 const searchUrl =
   "https://en.wikipedia.org/w/api.php?action=query&origin=*&list=search&utf8=&format=json&srlimit=500&srsearch=";
@@ -104,11 +112,8 @@ const header = document.querySelector("#title");
 const link = document.querySelector("#link");
 const resultDiv = document.querySelector("#resultDiv");
 const userInput = document.querySelector("#userinput");
+const debug = false;
 
-let startTime;
-let lastCardPrinted = new Date();
-const cardPrintInterval = 2; //interval of print jobs in minutes should be set at 20!!!!
-let cardTracker;
 let term;
 let title;
 let cardTitle;
@@ -117,6 +122,8 @@ let plot;
 let ready = true;
 let maxAccuracy = 0.8;
 let minAccuracy = 0.65;
+
+let home = true;
 
 //line stuff
 let lineList = [];
@@ -128,52 +135,16 @@ window.history.pushState({ home: true }, "");
 // GENERAL FUNCTIONS ----------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-$.fn.random = function() {
-  return this.eq(Math.floor(Math.random() * this.length));
-};
-
-function findSentenceWith(text, word) {
-  // let regex = new RegExp("[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]", "gi");
-  let regex = new RegExp(
-    "(?![{}])[^.?!]*(?<=[.?\\s!])" + word + "(?=[\\s.?!])[^.?!]*[.?!]",
-    "gi"
-  );
-  return text.match(regex);
-}
-
-function parsedTime() {
-  let d = new Date();
-  return (
-    d.getDate() +
-    "." +
-    (d.getMonth() + 1) +
-    "." +
-    d.getFullYear() +
-    " " +
-    ("0" + d.getHours()).slice(-2) +
-    ":" +
-    ("0" + d.getMinutes()).slice(-2)
-  );
-}
-
 function random(min, max) {
   return Math.random() * (+max - +min) + +min;
 }
-
-// function timeOnArticle() {
-//   if (startTime) {
-//     return new Date() - startTime;
-//   } else {
-//     return 0;
-//   }
-// }
 
 // ----------------------------------------------------------------------------
 // SEARCH FUNCTIONS -----------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 $("#userinput").keypress(function(event) {
-  var keycode = event.keyCode ? event.keyCode : event.which;
+  let keycode = event.keyCode ? event.keyCode : event.which;
   if (keycode == "13") {
     searchTriggered();
   }
@@ -201,15 +172,16 @@ function searchTriggered() {
 
 function prepareSearch(term) {
   ready = false;
-  // header.innerText = "Please Wait";
+  exitHome();
   hideHeader();
   hideContent(true);
   emptyLines();
+
   search(term);
 }
 
 function resetSearch() {
-  // setSearchField();
+  setSearchField();
   emptyLines();
   hideContent();
 }
@@ -250,6 +222,11 @@ function showContent() {
 
 function setHeader(txt, f) {
   header.innerText = txt;
+  // if (!home) {
+  //   $("#title").removeClass("highlighted");
+  // } else {
+  //   $("#title").addClass("highlighted");
+  // }
   $("#title").fadeIn("fast", f);
 }
 
@@ -263,54 +240,65 @@ function hideHeader(f) {
   $("#title").fadeOut("fast", f);
 }
 
+function errorHandler(e) {
+  setHeader(e);
+  link.href = "#";
+  ready = true;
+}
+
 function search(term) {
   let url = searchUrl + term;
-  // console.log("looking for " + url);
-  $.getJSON(url, receivedSearch);
+
+  $.ajax({
+    url: url,
+    dataType: "json"
+  })
+    .done(receivedSearch)
+    .fail(function(e) {
+      errorHandler("Search Failed. Sorry!");
+      if (debug) {
+        console.log("Error while searching for term:" + e);
+      }
+    });
 }
 
 function receivedSearch(data) {
   if (data.query.search.length) {
     let index =
       data.query.search.length -
+      1 -
       Math.floor(random(minAccuracy, maxAccuracy) * data.query.search.length);
 
     title = data.query.search[index].title;
+    correctTitle = data.query.search[0].title;
     cardTitle = title;
 
-    correctTitle = data.query.search[0].title;
-
-    // set fixed title for a specific article.
-    // title = "Jōetsu Line";
-    // title = "Pulau Biola";
-    // title = "Titanic";
-
-    // header.innerText = title;
-    // setHeader(title);
-
     setHeader(title, function() {
-      // console.log("Loaded Article " + 0 + " of " + data.query.search.length);
-      // console.log(
-      //   "Sent Article " +
-      //     index +
-      //     " of " +
-      //     data.query.search.length +
-      //     "to the receiver"
-      // );
+      if (debug) {
+        console.log(
+          "Loaded Article " + index + " of " + data.query.search.length
+        );
+        console.log("Querying: " + title);
+      }
       title = title.replace(/\s+/g, "_");
       link.href = "https://en.wikipedia.org/wiki/" + title;
 
-      // console.log("Querying: " + title);
-
       setHistory();
       let url = parseUrl + title;
-      $.getJSON(url, gotParsed);
+      $.ajax({
+        url: url,
+        dataType: "json"
+      })
+        .done(gotParsed)
+        .fail(function(e) {
+          errorHandler("Couldn't load article. Sorry!");
+          if (debug) {
+            console.log("Error while parsing data:" + e);
+          }
+        });
     });
   } else {
-    // header.innerText = "No results. Sorry!";
-    setHeader("No results. Sorry!");
-    link.href = "#";
-    ready = true;
+    errorHandler("No results. Sorry!");
   }
 }
 
@@ -319,26 +307,39 @@ function receivedSearch(data) {
 // ----------------------------------------------------------------------------
 
 window.onpopstate = function(event) {
-  console.log(event);
+  if (debug) {
+    console.log("POPSTATE: " + event);
+  }
+
   if (event.state) {
     hideContent();
     emptyLines();
 
     if (event.state.home) {
-      // userInput.value = "";
-      // header.innerText = "";
-      // resultDiv.innerText = "This is a serendipitous Knowledge-Retrieval-System.";
-      hideHeader();
+      if (debug) {
+        console.log("home");
+      }
+      showHome();
     } else {
+      exitHome();
       userInput.value = event.state.term;
-      // header.innerText = event.state.cardTitle;
       changeHeader(event.state.cardTitle, function() {
         let url = parseUrl + event.state.title;
-        $.getJSON(url, gotParsed);
+        $.ajax({
+          url: url,
+          dataType: "json"
+        })
+          .done(gotParsed)
+          .fail(function(e) {
+            errorHandler("Couldn't load article. Sorry!");
+            if (debug) {
+              console.log("Error while parsing data:" + e);
+            }
+          });
       });
     }
 
-    // setSearchField();
+    setSearchField();
   }
 };
 
@@ -357,18 +358,22 @@ function setHistory() {
 // ----------------------------------------------------------------------------
 
 function gotParsed(data) {
-  let txt = data.parse.text["*"];
-  // console.log(txt);
+  try {
+    let txt = data.parse.text["*"];
 
-  $("#resultDiv")
-    .html(txt)
-    .promise()
-    .done(applyStyle);
+    $("#resultDiv")
+      .html(txt)
+      .promise()
+      .done(applyStyle);
+  } catch (e) {
+    errorHandler("Couldn't load article. Sorry!");
+    if (debug) {
+      console.log("Error while parsing data:" + e);
+    }
+  }
 }
 
 function applyStyle() {
-  // startTime = new Date();
-
   //fix wiki links
   $(this)
     .find("a")
@@ -394,8 +399,17 @@ function applyStyle() {
                       let x = t.replace(/\s+/g, "_");
                       link.href = "https://en.wikipedia.org/wiki/" + x;
                       let url = parseUrl + x;
-
-                      $.getJSON(url, gotParsed);
+                      $.ajax({
+                        url: url,
+                        dataType: "json"
+                      })
+                        .done(gotParsed)
+                        .fail(function(e) {
+                          errorHandler("Couldn't load article. Sorry!");
+                          if (debug) {
+                            console.log("Error while parsing article:" + e);
+                          }
+                        });
                     }
                   });
                 }
@@ -426,7 +440,6 @@ function applyStyle() {
       $(this).removeAttr("style");
     });
 
-  //
   $(this)
     .find("img")
     .removeAttr("width")
@@ -452,10 +465,12 @@ function applyStyle() {
     .add(".vertical-navbox")
     .appendTo(".left-lane");
 
-  $("#copyright")
-    .clone()
-    .removeAttr("style") //REMOVE FOR EXHIBITION
-    .appendTo(this);
+  if (!true) {
+    $("#copyright")
+      .clone()
+      .removeAttr("style") //REMOVE FOR EXHIBITION
+      .appendTo(this);
+  }
 
   //mark first p (mostly short description)
   $(".mw-parser-output > p:first").addClass("first-p");
@@ -466,21 +481,8 @@ function applyStyle() {
     .find("*")
     .on("load", createLines);
 
-  //send card info, once images are Loaded
-  let imagesLoaded = 0;
-  let totalImages = $(this).find("img").length;
-  if (totalImages) {
-    $("img").on("load", function(event) {
-      imagesLoaded++;
-      if (imagesLoaded == totalImages) {
-        ready = true;
-        showContent();
-      }
-    });
-  } else {
-    ready = true;
-    showContent();
-  }
+  ready = true;
+  showContent();
 }
 
 // ----------------------------------------------------------------------------
@@ -489,14 +491,14 @@ function applyStyle() {
 
 window.onresize = function(event) {
   createLines();
-  // setSearchField();
+  setSearchField();
 };
 
 function emptyLines() {
   $("#svgContainer").fadeOut("fast", function() {
     $(this)
-      .find("svg")
-      .empty();
+      .find("svg path")
+      .attr("d", "");
   });
 }
 
@@ -517,6 +519,53 @@ function createLines() {
     lineList.push([x, y]);
   });
 
-  roundSvg.innerHTML = svgPath(lineList);
+  $("#round-svg path").attr("d", svgPathD(lineList));
+
+  try {
+    var pathLength = document.querySelector("#round-svg path").getTotalLength();
+    $("#round-svg path").css({
+      "stroke-dasharray": pathLength,
+      "stroke-dashoffset": pathLength,
+      "animation-duration": Math.round(pathLength / 1500) + "s"
+    });
+  } catch (error) {
+    if (debug) {
+      console.log(error);
+    }
+  }
+
   $("#svgContainer").fadeIn("fast");
+}
+
+$("#projTitle").click(function() {
+  // $("#cardAlert")
+  //   .addClass("active")
+  //   .css("max-height", "calc(100vh - 64px)");
+  // $("body").css("overflow", "hidden");
+  // $(this).fadeOut("fast");
+  if (!home) {
+    showHome();
+  }
+});
+
+function showHome() {
+  home = true;
+  // $("#projTitle").fadeOut("fast");
+  // $("#title").removeClass("highlighted");
+  hideBoth();
+  changeHeader("Lateral Computation", function() {
+    $("#resultDiv")
+      .html(
+        '<div class="mw-parser-output" style=""><p class="first-p"><i><b>Lateral Computation</b></i> is the outcome of a Bachelor of Arts project at the <a href="http://www.iad.zhdk.ch" title="Interaction Design">Interaction Design</a> departement of the <a href="http://www.zhdk.ch" title="ZHdK">ZHdK</a>, developed by <a href="http://www.michaelschoenenberger.ch" title="Michael Schönenberger">Michael Schönenberger</a>.</p><h2>How to use</h2><p>In order to make use of the knowledge retrieval system, enter a term in the search field above and then click on the arrow sign next to the input field or the <i>Enter</i> key on your keyboard.</p><h2>Project Description</h2><p>The presence of computer networks and the associated algorithms rises daily. Filter systems on the internet offer less and less room for unexpected, yet refreshing, encounters. As most of the existing systems aim for precision and personalization of these filters there are little applications that address the aforementioned aspect. Lateral Computation explores the potential of enforcing serendipity in knowledge retrieval systems by making use of alternative computation. The experiments implemented within this thesis have been utilized to analyze users behavior and the very nature of serendipitous confrontations. Lateralcomputation.ch - being the practical outcome of previous testings and experiences - is a website that makes use of the MediaWiki API to display articles of knowledge. After querying a term, the user stumbles upon a serendipitous article in relation to the entered term.</p></div></div>'
+      )
+      .promise()
+      .done(applyStyle);
+  });
+}
+
+function exitHome() {
+  home = false;
+  // $("#projTitle").fadeIn("fast");
+  // $("#title").removeClass("highlighted");
+  console.log("exit");
 }

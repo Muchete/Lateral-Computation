@@ -1,26 +1,14 @@
-// ::-webkit-scrollbar {
-//   width: 0px;
-// }
+#cardAlert {
+  width: 100%;
+  height: calc(100vh - 64px);
 
-//exhibition stuff
-// #resultDiv a.external,
-// #copyright a {
-//   pointer-events: none;
-// }
-
-// #cardAlert {
-//   position: fixed;
-//   top: 0;
-//   right: 0;
-//   left: 0;
-//   bottom: 0;
-//
-//   z-index: 10;
-//   background-color: black;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// }
+  z-index: 10;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  margin-left: 500px;
+  transition: max-height 5s ease-in-out;
+}
 
 #cardAlert span {
   font-size: 2rem;
@@ -42,10 +30,11 @@ body {
 }
 
 .topWrap {
+  position: relative;
   padding-top: 66px;
-  overflow-x: hidden;
-  max-width: 100%;
   /* padding-top: 50vh; */
+  box-sizing: border-box;
+  height: 100vh;
 }
 
 h1,
@@ -122,7 +111,7 @@ b {
   padding-left: 500px;
 }
 
-#resultDiv {
+.wiki-style {
   border: none;
   padding: 0;
 }
@@ -131,6 +120,7 @@ mark,
 .highlighted,
 .term {
   /* animation:blinkingText 2s infinite; */
+  transition: color 0.2s ease-in-out;
   animation: none;
   color: yellow;
 }
@@ -149,6 +139,7 @@ mark,
 
 .lc-header {
   position: fixed;
+  // position: absolute;
   top: 0;
   z-index: 1;
 
@@ -164,11 +155,15 @@ mark,
   border-bottom: white 2px solid;
   max-width: 100%;
 }
-
 .proj-title {
   position: absolute;
   left: 8px;
   top: 11px;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.fakeEl {
   font-size: 2rem;
 }
 
@@ -178,15 +173,13 @@ mark,
   color: yellow;
   border: 0;
   border-bottom: 2px solid gray;
-  max-width: 200px;
+  max-width: 850px;
   height: 41px;
-  width: 200px;
+  width: 300px;
   overflow-x: scroll;
-
-  /* align-self: center; */
-
-  padding-top: 0;
-  padding-bottom: 0;
+  // padding-top: 0;
+  // padding-bottom: 0;
+  padding: 0 2px;
   margin-bottom: 2px;
 
   position: relative;
@@ -240,8 +233,6 @@ mark,
   display: none;
 }
 
-/* #resultDiv .toc,
-#resultDiv .infobox{ */
 .left-lane {
   position: absolute;
   left: 10px;
@@ -296,10 +287,6 @@ tbody li {
 
 #resultDiv .navbox {
   margin-top: 10px;
-}
-
-#resultDiv .navbox * {
-  /* color: gray; */
 }
 
 #resultDiv .navbox-title {
@@ -387,6 +374,16 @@ tbody li {
   stroke: yellow;
 }
 
+#svgContainer path {
+  animation: dash 3s linear forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* MOBILE VIEW!! */
 
 @media only screen and (max-width: 1024px) {
@@ -398,6 +395,10 @@ tbody li {
     padding: 10px;
     width: 100%;
     max-width: 100%;
+  }
+
+  .search {
+    max-width: calc(100% - 544px);
   }
 
   .content {
@@ -438,6 +439,7 @@ tbody li {
 @media only screen and (max-width: 768px) {
   .proj-title,
   .search,
+  .fakeEl,
   .btn-search {
     font-size: 1.5rem;
   }
