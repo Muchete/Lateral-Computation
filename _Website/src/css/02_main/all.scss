@@ -184,6 +184,7 @@ mark,
 
   position: relative;
   margin-left: 500px;
+  border-radius: 0;
 }
 
 .search::placeholder {
@@ -368,13 +369,10 @@ tbody li {
   /* display: none; */
 }
 
-#svgContainer path,
-#svgContainer line {
+#svgContainer path {
   stroke-width: 2px;
   stroke: yellow;
-}
-
-#svgContainer path {
+  // animation-delay: 3s;
   animation: dash 3s linear forwards;
 }
 
@@ -446,7 +444,7 @@ tbody li {
 
   .search {
     margin-left: 0;
-    margin-right: 20px;
+    margin-right: 25px;
     float: right;
     height: 30px;
     max-width: calc(30% - 30px);

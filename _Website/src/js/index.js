@@ -80,7 +80,7 @@ $(".width-dynamic")
   .trigger("input");
 
 function setSearchField() {
-  var inputWidth = $(".width-dynamic").textWidth() + 4;
+  var inputWidth = $(".width-dynamic").textWidth() + 6;
   $(".width-dynamic").css({
     width: inputWidth
   });
@@ -128,6 +128,7 @@ let home = true;
 //line stuff
 let lineList = [];
 let curLinePos = 0;
+let pixelPerSecond = 1500; //speed of line animation
 
 window.history.pushState({ home: true }, "");
 
@@ -446,12 +447,14 @@ function applyStyle() {
     .removeAttr("height");
 
   // mark terms in resultDiv (this) and title
-  $(this)
-    .add("#title")
-    .mark(term, {
-      element: "span",
-      className: "term"
-    });
+  if (!home) {
+    $(this)
+      .add("#title")
+      .mark(term, {
+        element: "span",
+        className: "term"
+      });
+  }
 
   //add left lane div
   $(this).prepend('<div class="left-lane"></div>');
@@ -526,7 +529,7 @@ function createLines() {
     $("#round-svg path").css({
       "stroke-dasharray": pathLength,
       "stroke-dashoffset": pathLength,
-      "animation-duration": Math.round(pathLength / 1500) + "s"
+      "animation-duration": Math.round(pathLength / pixelPerSecond) + "s"
     });
   } catch (error) {
     if (debug) {
@@ -567,5 +570,7 @@ function exitHome() {
   home = false;
   // $("#projTitle").fadeIn("fast");
   // $("#title").removeClass("highlighted");
-  console.log("exit");
+  if (debug) {
+    console.log("exit Home");
+  }
 }
