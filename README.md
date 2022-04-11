@@ -8,7 +8,7 @@ The presence of computer networks and the associated algorithms rises daily. Fil
 
 [lateralcomputation.ch](https://lateralcomputation.ch) is a serendipitous knowledge retrieval system. It queries articles from the MediaWiki API and displays unexpected, yet related articles. The yellow line indicates the occurrences of the searched term within the article.
 
-## Documentation
+## Bachelors thesis
 
 The projects documentation can be found on [Academia](https://www.academia.edu/44769940/Lateral_Computation).
 
