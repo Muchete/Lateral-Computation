@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Lateral Computation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="dist/main.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+    <script src="https://assets.shiftr.io/js/mqtt-2.9.0.js"></script>
+  </head>
+  <body>
+    <div class="lc-header wrapper">
+      <h1 class="proj-title">Lateral Computation</h1>
+      <input
+        type="text"
+        name="input"
+        class="search width-dynamic"
+        id="userinput"
+        placeholder="Search"
+      />
+      <button class="btn-search" type="button" id="search-button" name="Search">
+        →
+      </button>
+
+      <!--
+        <button class="buttons" type="button" id="down-button" name="down">↓</button>
+        <button class="buttons" type="button" id="up-button" name="up">↑</button>
+      -->
+    </div>
+    <div class="topWrap">
+      <h3 class="article-title" id="title"></h3>
+      <div class="" id="svgContainer">
+        <!-- <svg id="lines" xmlns="http://www.w3.org/2000/svg"></svg> -->
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          id="round-svg"
+        ></svg>
+      </div>
+      <div class="content">
+        <div class="" id="resultDiv">
+          <!-- <p>This is a serendipitous encyclopedia.</p> -->
+        </div>
+        <div id="copyright" style="display:none;">
+          The above article was loaded using the
+          <a id="mediaWiki" href="https://www.mediawiki.org/wiki/API:Main_page"
+            >MediaWikiAPI</a
+          >. For the original article, <a href="#" id="link">click here</a>.
+        </div>
+      </div>
+    </div>
+    <div id="cardAlert" style="display:none;">
+      <span class=""
+        >Don't leave! You earned a <span class="highlighted">postcard</span>.
+        <br />Printing the card takes one minute at most!
+      </span>
+    </div>
+    <script src="dist/main.js" async></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+.streamContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* display: flex; */
+  /* justify-content: center; */
+  z-index: -1;
+}
+
+.streamContainer video {
+  width: 100%;
+}
+
+.siteContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+}
+
+.site {
+  line-height: 0;
+
+  /* SETTING */
+  background-color: white;
+  width: 70vw;
+  height: 70vh;
+  transform: skew(0deg, 0deg);
+}
+
+.site iframe {
+  width: 100%;
+  height: 100%;
+
+  line-height: 0;
+
+  /* SETTING */
+  /* opacity: 0.8; */
+}
+
+/* ---------------------------------------------------------------------
+SETTINGS FOR EXHIBITION TEST
+--------------------------------------------------------------------- */
+
+.streamContainer {
+  /* top: 0; */
+}
+
+.site {
+  /* width: 70vw;
+  height: 70vh;
+  transform: skew(0deg, 0deg); */
+}
